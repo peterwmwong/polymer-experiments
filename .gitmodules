@@ -1,0 +1,6 @@
+[submodule "vendor/platform"]
+	path = vendor/platform
+	url = git@github.com:Polymer/platform.git
+[submodule "vendor/polymer"]
+	path = vendor/polymer
+	url = git@github.com:Polymer/polymer.git

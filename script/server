@@ -1,0 +1,18 @@
+#!/usr/bin/env coffee
+
+{resolve} = require 'path'
+connect = require 'connect'
+http = require 'http'
+
+root_path = resolve __filename, '../..'
+port = process.argv[2] or 3000
+
+app = connect()
+app.use(plugin) for plugin in [
+  connect.favicon()
+  connect.compress()
+  connect.static root_path, maxAge: 1, hidden: true
+] 
+
+http.createServer(app).listen port
+console.log "serving #{root_path} on port #{port}"

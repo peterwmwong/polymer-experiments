@@ -1,0 +1,16 @@
+{
+  "name": "todomvc-p",
+  "version": "0.0.0",
+  "author": [
+    "Peter Wong <peter.wm.wong@gmail.com>"
+  ],
+  "engines": {
+    "node": ">=0.10.12"
+  },
+  "dependencies": {
+    "coffee-script": "1.6.3",
+    "connect": "~2.7.5",
+    "jade": "0.31.2",
+    "stylus": "0.32.1"
+  }
+}

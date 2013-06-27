@@ -1,0 +1,3 @@
+#!/bin/sh
+npm install
+node_modules/.bin/jade --watch $(find . -name '*.jade') -P

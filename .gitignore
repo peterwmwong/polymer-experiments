@@ -1,0 +1,10 @@
+# Temp Files #
+##############
+*.swp
+*.DS_Store
+*.js
+*.css
+*.map
+*.html
+
+node_modules/
