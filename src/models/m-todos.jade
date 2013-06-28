@@ -1,0 +1,25 @@
+polymer-element( name='m-todos' )
+  :coffeescript
+    Todo = ({@text})->
+
+    Polymer 'm-todos',
+      ready: ->
+        @items or= [
+          new Todo text: 'Test Text'
+        ]
+
+      filtered: ->
+        console.log 'yolo'
+        @items
+
+      add: (todo)->
+        @items.push new Todo todo
+        @fireChanged()
+
+      remove: (todo)->
+        if -1 isnt (index = @items.indexOf todo)
+          @items.splice index, 1
+          @fireChanged()
+
+      fireChanged: ->
+        @fire 'm-todos-changed'

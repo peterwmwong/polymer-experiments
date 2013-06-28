@@ -1,0 +1,11 @@
+link(rel='import', href='../models/m-todos.html')
+
+polymer-element(name='todos')
+  link(rel='stylesheet', href='todos.css')
+
+  template 
+    m-todos#model
+    template(repeat='{{item in $.model.items}}')
+      li {{item.text}}
+
+  script(src='todos.js')

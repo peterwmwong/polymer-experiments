@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Checkout the master branch and pull for all the polymer sub-projects
+
+cd vendor/polymer-all
+for i in $(ls -d -- */); do
+  cd $i
+  git checkout master
+  git pull
+  cd ..
+done
+
+git add .
+git submodule update --recursive
