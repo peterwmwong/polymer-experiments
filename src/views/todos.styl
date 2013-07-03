@@ -1,0 +1,47 @@
+@css {
+  @host {
+    * {
+      display: block;
+    }
+  }
+}
+
+.inputWrap
+  padding 10px
+  background-color #F9F9F9
+
+  > #newTodo
+    display block
+    background-color transparent
+    width 100%
+    border none
+    outline none
+    font-size 22px
+
+.todos
+  border-bottom 1px solid #EEE
+  border-top 1px solid #EEE
+  li
+    list-style none
+    padding 15px 10px
+
+    > input
+      float right
+
+.filterGroup
+  background-color #F9F9F9
+  text-align center
+  padding 5px 0
+
+  &.all > .all, &.complete > .complete, &.active > .active
+    color #666
+
+
+  > a.filter
+    font-size 14px
+    margin-right 10px
+    text-decoration none
+    color #AAA
+
+    &:last-child
+      margin-right 0px

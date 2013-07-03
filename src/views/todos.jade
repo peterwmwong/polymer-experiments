@@ -1,11 +1,22 @@
-link(rel='import', href='../models/m-todos.html')
-
 polymer-element(name='todos')
-  link(rel='stylesheet', href='todos.css')
+  link(rel='import', href='../models/m-todos.html')
 
   template 
+    link(rel='stylesheet', href='todos.css')
+
     m-todos#model
-    template(repeat='{{item in $.model.items}}')
-      li {{item.text}}
+
+    .inputWrap
+      input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
+
+    .todos
+      template(repeat='{{$.model.filtered}}')
+        li {{text}}
+          input(type='checkbox', checked='{{ done }}')
+
+    .filterGroup(class='{{$.model.filterOn}}')
+      a.filter.all(href='../#/all') All
+      a.filter.active(href='../#/active') Active
+      a.filter.complete(href='../#/complete') Complete
 
   script(src='todos.js')

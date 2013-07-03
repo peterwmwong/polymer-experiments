@@ -3,21 +3,23 @@ html(lang='en')
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
-    title polymer-experiments
+    title [todomvc] polymer-experiments
     script(src='../vendor/polymer-all/polymer/polymer.js')
-    link(rel="stylesheet", href="app/app.css")
+    script(src='../vendor/polymer-all/mdv/third_party/ChangeSummary/util/array_reduction.js')
+    link(rel='stylesheet', href='index.css')
     link(rel='import', href='views/todos.html')
+
   body
-    header
+    header#banner
       h1 todos
 
-    todos
+    todos#todos
 
     footer#info
       p Double-click to edit a todo
       p Created by 
         a(href="http://www.polymer-project.org") The Polymer Authors
-      p Part of
+      p Part of 
         a(href="http://todomvc.com") TodoMVC
 
     //- livereload
