@@ -1,5 +1,8 @@
 polymer-element(name='todos')
   link(rel='import', href='../models/m-todos.html')
+  link(rel='import', href='newtodo-input.html')
+  link(rel='import', href='todo-item.html')
+  script(src='../helpers/ArrayReduction.js')
 
   template 
     link(rel='stylesheet', href='todos.css')
@@ -7,16 +10,28 @@ polymer-element(name='todos')
     m-todos#model
 
     .inputWrap
-      input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
+      newtodo-input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
 
-    .todos
-      template(repeat='{{$.model.filtered}}')
-        li {{text}}
-          input(type='checkbox', checked='{{ done }}')
+    form.todos
+      template(repeat='{{ item in computed.filtered }}')
+        todo-item(item='{{ item }}', on-deletetodo='onDeleteTodo')
 
-    .filterGroup(class='{{$.model.filterOn}}')
-      a.filter.all(href='../#/all') All
-      a.filter.active(href='../#/active') Active
-      a.filter.complete(href='../#/complete') Complete
+    .todosFooter
+      .filterGroup(class='{{ filterOn }}')
+        a.filter.all(href='../#/all')
+          | All
+
+        a.filter.active(href='../#/active')
+          | Active
+
+        a.filter.complete(href='../#/complete')
+          | Complete
+
+      template(bind='{{ computed }}')
+        .activeCount(hidden?='{{ !activeCount }}')
+          | <b>{{ activeCount }}</b> left
+        .completedCount(hidden?='{{ !completedCount }}', on-click='onClearCompleted')
+          | Clear completed ({{ completedCount }})
+        
 
   script(src='todos.js')

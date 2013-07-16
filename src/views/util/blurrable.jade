@@ -1,0 +1,5 @@
+polymer-element( name='blurrable', extends='input', on-blur='onBlur', on-focus='onFocus' )
+  :coffeescript
+    Polymer 'blurrable',
+      onBlur: -> @fire 'blurred'
+      onFocus: -> @fire 'focused'

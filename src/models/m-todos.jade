@@ -2,65 +2,27 @@ polymer-element( name='m-todos' )
   :coffeescript
     Polymer 'm-todos',
 
-      # Determines what items should be filtered on to populate
-      # `@filtered` array.
-      # Acceptable values: 'all', 'active', or 'complete'.
-      filterOn: 'all'
-
+      # TODO: Load todos from localstorage or REST resource
       items: [
           {text: 'ONE', done: false}
-          {text: 'TWO', done: true}
+          {text: 'TWO', done: false}
+          {text: 'THREE', done: true}
+          {text: 'FOUR', done: false}
         ]
 
-      ready: ->
-        # Binds to `this`, to make it easier to pass as a callback while
-        # maintaining `this` context.
-        @reduceFiltered = @reduceFiltered.bind @
+      addTodo: ({text,done})->
+        @items.push {text,done}
 
-        ###
-        Update `@filtered` array whenever...
-        1. `@items` array changes (add, delete, update)
-        1. `@done` changes on an item in `@items`
+      removeTodo: (todo)->
+        if -1 < id = @items.indexOf todo
+          @items.splice id, 1
 
-        Platform Feature: ArrayReduction (mdv/third_party/ChangeSummary)
-        ----------------------------------------------------------------
-        
-        Very cool utility to simplify...
-        1. Reducing an Array based on a property on each item.
-        1. Writing the reduced value to an Object.
-        1. Updating the reduced value (reduce and write) whenever...
-           1. the Array changes (add, delete, update)
-           1. the property of an item changes.
-        ###
-        ArrayReduction.defineProperty @, 'filtered', 
-          array: @items,
-          path: 'done',
-          initial: [],
-          reduce: @reduceFiltered
-
-      ###
-      When `@filterOn` changes, update `@filtered` array.
-
-      Platform Feature: Auto-binds change listeners (Polymer)
-      -------------------------------------------------------
-      
-      Polymer elements with properties named like `"#{propertyName}Changed"`,
-      are automically bound as a change listener to `propertyName`.
-      TODO: Add link.
-      ###
-      filterOnChanged: ->
-        @items
-          .map((it)->it.done)
-          .reduce(@reduceFiltered, @filtered)
-
-      ###
-      Reduces todo items to the ones that meet the `@filterOn` criteria.
-      Expects to be called by `Array::reduce()` with an array of the `@done`
-      attribute of each todo item.
-      ###
-      reduceFiltered: (prev,currentDone,i)->
-        prev.splice(0) unless i
-        if (@filterOn is 'all') or (@filterOn is 'complete' and currentDone) or (@filterOn is 'active' and not currentDone)
-          prev.push @items[i]
-        prev
-
+      clearCompleted: ->
+        i=0
+        items = @items
+        `for(;i<items.length;++i){`
+        if items[i].done
+          items.splice i, 1
+          --i
+        `}`
+        return
