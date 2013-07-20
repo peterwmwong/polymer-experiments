@@ -1,0 +1,15 @@
+@css {
+  @host {
+    * {
+      display: block;
+    }
+  }
+}
+
+/* @polyfill @host > v-switch-case */
+content::-webkit-distributed(v-switch-case)
+  display none
+
+/* @polyfill @host > v-switch-case.enabled */
+content::-webkit-distributed(v-switch-case.enabled)
+  display block

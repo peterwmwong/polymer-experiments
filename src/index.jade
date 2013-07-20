@@ -6,18 +6,10 @@ html(lang='en')
     title [todomvc] polymer-experiments
     script(src='../vendor/polymer-all/polymer/polymer.js')
     link(rel='stylesheet', href='index.css')
-    link(rel='import', href='views/todos.html')
+    link(rel='import', href='views/v-game.html')
 
   body
-    header#banner
-      h1 todos
-
-    todos#todos
-
-    footer#info
-      p Click to edit a todo
-      p Created by 
-        a(href="https://github.com/peterwmwong") Peter Wong
+    v-game
 
     //- livereload
     script.

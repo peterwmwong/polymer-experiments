@@ -1,0 +1,67 @@
+@import 'buttons'
+@import 'colors'
+@import 'gradient'
+
+@css {
+  @host {
+    v-login {
+      display: block;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    v-login:after {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
+}
+
+.panel
+  display inline-block
+  overflow hidden
+  width 450px
+  box-shadow 0px 1px 3px #BBB
+  background-color color-white-bg
+  box-sizing border-box
+
+  // TODO: Not sure why our vertical is not working
+  //       for short windows sizes...
+  margin-top 50px
+
+  > #banner
+    background-color #F4F4F4
+    border-bottom 1px dashed #D8D8D8
+    border-top 1px solid #FFF
+    color #CCC
+    font-family 'Expletus Sans'
+    font-weight 500
+    font-size 3em
+    padding .75em 0 .45em 0
+    position relative
+    z-index 1
+
+  > form
+    overflow hidden
+    padding 2em 4em 2.25em 4em
+
+    > input
+      width 100%
+      margin-bottom .5em
+
+      &:nth-child(2)
+        margin-bottom 2em
+
+    > #signup
+      button( color-red )
+      float left
+
+    > #login
+      margin-left 1em
+      float right
+
+    > #signup, > #login
+      width 100px
+

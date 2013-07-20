@@ -1,0 +1,23 @@
+link( rel='import', href='../models/m-game.html' )
+link( rel='import', href='utils/v-switch.html' )
+
+//- Pages
+link( rel='import', href='pages/login/v-login.html' )
+//- link( rel='import', href='pages/account/v-account.html' )
+link( rel='import', href='pages/challenge-selection/v-challenge-selection.html' )
+//- link( rel='import', href='pages/challenges/v-challenge-loader.html' )
+  
+  
+polymer-element( name='v-game' )
+
+  template
+    link( rel='stylesheet', href='v-game.css' )
+    m-game#game
+
+    v-switch( switch='{{ $.game.state.id }}' )
+      v-switch-case( case='login' )
+        v-login
+      v-switch-case( case='challenge-selection' )
+        v-challenge-selection
+
+  script( src='v-game.js' )
