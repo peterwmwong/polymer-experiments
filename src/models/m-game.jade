@@ -1,3 +1,5 @@
+script( src='/src/helpers/States' )
+
 polymer-element( name='m-game' )
   :coffeescript
     'use strict'
@@ -34,6 +36,29 @@ polymer-element( name='m-game' )
       # Default location is '#/login'
       else
         window.location.hash = '#/login';
+
+    window.addEventListener 'hashchange', onHashChange
+    onHashChange()
+
+    ###
+    states = new States
+      login:
+        canEnter: -> true
+        canExit: -> true
+
+      challenge-selection: ->
+        canEnter: -> true
+        canExit: -> true
+    ###
+
+    onHashChange = ->
+      match = RX_HASH.exec(window.location.hash)
+      id = match?[1]
+      data = match?[3]
+
+      # Verify new hash is valid (maps to a state)
+      #- if id
+
 
     window.addEventListener 'hashchange', onHashChange
     onHashChange()

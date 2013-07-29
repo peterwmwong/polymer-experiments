@@ -1,10 +1,14 @@
-link( href='http://fonts.googleapis.com/css?family=Expletus+Sans:400,700,600,500', rel='stylesheet', type='text/css')
+link( href='http://fonts.googleapis.com/css?family=Expletus+Sans:700',
+      rel='stylesheet',
+      type='text/css')
+link( href='/src/helpers/dev-xhr.html', rel='import' )
 
 polymer-element( name='v-login' )
   template
     link( href='/src/styles/common.css', rel='stylesheet', type='text/css' )
     link( href='v-login.css', rel='stylesheet', type='text/css' )
-    //- link( href='' )
+
+    dev-xhr( id='xhr' )
     m-game#game
 
     .panel
@@ -23,12 +27,23 @@ polymer-element( name='v-login' )
   :coffeescript
     Polymer 'v-login',
       onLogin: ->
-        
-        
+        user = @$.username.value
+        pass = @$.password.value
+        if user and pass
+          @$.xhr.request
+            method: 'POST'
+            url: '/users/login'
+            body: {user, pass}
+            callback: (resp, xhr)->
+              if xhr.status is 200
+                console.log 'LOGIN SUCCESS', JSON.parse resp
+              else
+                console.log 'LOGIN FAIL'
 
       ready: ->
         # Focus onto username input
-        @asyncMethod -> @$.username.focus()
+        @asyncMethod ->
+          @$.username.focus()
 
         # Type the 'Transliteration' login banner
         @title = ''
@@ -39,6 +54,5 @@ polymer-element( name='v-login' )
             Platform.performMicrotaskCheckpoint()
             addLetter() if fullTitle.length
           ), 100
+
         addLetter()
-
-

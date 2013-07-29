@@ -1,9 +1,16 @@
 @import 'colors'
 
 html
-  background-color color-gray-bg
+  // background-color color-gray-bg
   font-family Helvetica, Arial, sans-serif
   height 100%
+
+// Striped Background
+@css {
+  html {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAMElEQVQIW2N8+vTpfwYk8Pz5cwZGZEGQgKSkJEIQJgDSBFaJLAAWPHPmzH+QFmQAAB44HiEKbJ0GAAAAAElFTkSuQmCC) repeat;
+  }
+}
 
 body
   height 100%
@@ -12,6 +19,3 @@ body
 
   > v-game
     height 100%
-
-*:focus
-  outline 1px solid color-blue
