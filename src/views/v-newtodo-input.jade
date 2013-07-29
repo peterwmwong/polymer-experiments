@@ -1,0 +1,14 @@
+polymer-element( name='v-newtodo-input', type='text', \attributes='placeholder value' )
+
+  template
+    link(rel='stylesheet', href='../styles/common/buttons.css')
+    link(rel='stylesheet', href='v-newtodo-input.css')
+
+    input(placeholder='{{ placeholder }}', value='{{ value }}')
+
+    template(if='{{ value.length }}')
+      .clearInput.btn-cancel(on-click='onClearInput')
+
+  :coffeescript
+    Polymer 'v-newtodo-input',
+      onClearInput: -> @value = ''

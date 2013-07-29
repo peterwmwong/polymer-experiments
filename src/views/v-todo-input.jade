@@ -1,0 +1,13 @@
+polymer-element( name='v-todo-input', extends='input', on-blur='onBlur', on-focus='onFocus', on-keyup='onKeyup', type='text' )
+  :coffeescript
+    Polymer 'v-todo-input',
+      onBlur: -> @fire 'blurred'
+
+      onFocus: ->
+        @fire 'focused'
+        @asyncMethod @focus
+
+      onKeyup: (ev)->
+        if ev.which in [13, 27]
+          @fire 'blurred'
+          @asyncMethod @blur

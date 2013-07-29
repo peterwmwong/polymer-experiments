@@ -1,0 +1,113 @@
+@css {
+  @host {
+    * {
+      display: block;
+    }
+  }
+}
+
+.inputWrap
+  padding 10px
+  background-color #F9F9F9
+
+  > #newTodo
+    display block
+    background-color transparent
+    width 100%
+    border none
+    outline none
+    font-size 22px
+
+    &::-webkit-input-placeholder
+      font-style italic
+
+.todos
+  border-top 1px solid #EEE
+
+  li
+    border-bottom 1px solid #EEE
+    list-style none
+    padding 15px 10px
+
+    &.editing
+      > .doneTodo, > .deleteTodo
+        display none
+
+    &:hover
+      > .deleteTodo
+        background-color #DDD
+
+    > .editTodoTextWrap
+      display block
+      overflow hidden
+
+      > .editTodoText
+        display block
+        font-size inherit
+        outline none
+        border none
+
+    > .doneTodo
+      float left
+      margin-top 5px
+      margin-right 10px
+
+    > .deleteTodo
+      border-radius 25px
+      color #FFF
+      cursor pointer
+      display inline-block
+      float right
+      height 25px
+      line-height 23px
+      text-align center
+      width 25px
+
+      &:hover
+        background-color #999
+
+.todosFooter
+  background-color #F9F9F9
+  color #AAA
+  font-size 14px
+  padding 10px 10px
+  height 21px
+  position relative
+
+  > .activeCount, > .completedCount
+    &.activeCount
+      float left
+      line-height 22px
+
+    &.completedCount
+      font-size 11px
+      line-height 24px
+      background-color #E8E8E8
+      padding 0 10px
+      height 22px
+      border-radius 16px
+      position absolute
+      right 10px
+      cursor pointer
+
+      &:hover
+        background-color #DDD
+
+  > .filterGroup
+    text-align center
+    position absolute
+    padding-top 3px
+    left 0
+    right 0
+
+    &.all > .all, &.complete > .complete, &.active > .active
+      color #666
+      font-weight bold
+
+    > a.filter
+      margin-right 10px
+      text-decoration none
+      color #AAA
+
+      &:last-child
+        margin-right 0px

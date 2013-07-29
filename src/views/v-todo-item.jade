@@ -1,0 +1,25 @@
+polymer-element(name='v-todo-item', extends='li', \attributes='editing item')
+  link(rel='import', href='v-todo-input.html')
+
+  template
+    link(rel='stylesheet', href='../styles/common/buttons.css')
+    link(rel='stylesheet', href='v-todo-item.css')
+
+    .wrap(class='{{ editing:editing }}')
+
+      input.doneTodo(type='checkbox', checked='{{ item.done }}')
+
+      .deleteTodo.btn-cancel(on-click='onDeleteTodo')
+
+      .editTodoTextWrap
+        input.editTodoText(is='v-todo-input', value='{{ item.text }}', on-blurred='onEndEditingTodo', on-focused='onStartEditingTodo')
+
+  :coffeescript
+    Polymer 'v-todo-item',
+      ready: ->
+        @editing = false
+
+      onEndEditingTodo:   -> @editing = false
+      onStartEditingTodo: -> @editing = true
+      onDeleteTodo: ->
+        @fire 'deletetodo', this.item

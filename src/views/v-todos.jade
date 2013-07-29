@@ -1,0 +1,19 @@
+polymer-element(name='v-todos')
+  link(rel='import', href='../models/m-todos.html')
+  link(rel='import', href='v-newtodo-input.html')
+  link(rel='import', href='v-todo-item.html')
+  script(src='../helpers/ArrayReduction.js')
+
+  template 
+    link(rel='stylesheet', href='v-todos.css')
+
+    m-todos#model
+
+    .inputWrap
+      v-newtodo-input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
+
+    form.todos
+      template(repeat='{{ item in computed.filtered }}')
+        v-todo-item( item='{{ item }}', on-deletetodo='onDeleteTodo')
+
+  script(src='v-todos.js')

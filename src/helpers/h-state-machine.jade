@@ -1,0 +1,59 @@
+polymer-element( name='h-state-machine' )
+  :coffeescript
+    States = {}
+
+    StateDesc = (@id,{canEnter,canExit})->
+      @canEnter = canEnter if canEnter
+      @canExit = canExit if canExit
+      return
+
+    StateDesc:: =
+      create: (data={})->
+        id: @id
+        data: data
+        
+      canEnter: (prevState)-> true
+      canExit:  (nextState)-> true
+
+    State =
+      id: ''
+      data: {}
+
+    ###
+    allStates = new States
+      login: 
+        canExit: (state, prevState)->
+          if loggedIn() then true
+          else id: 'login'
+
+      'challenge-selection':
+        canEnter: (state, prevState)->
+          if loggedIn() then true
+          else
+            id: 'login'
+            data:
+              refererState: state
+    ###
+
+    StateMachine = (stateDescHash)->
+      @states = {}
+      @defaultState = undefined
+
+      for stateid, desc of stateDescHash
+        state = @states[stateid] = new StateDesc stateid, desc
+        @defaultState or= state
+
+      @currentState = @defaultState.create()
+      return
+
+    StateMachine::goto = (stateid, data)->
+      if state = @states[stateid]
+        newState = state.create data
+        @currentState = newState
+        true
+      else
+        false
+
+    Polymer 'h-state-machine',
+      create: (statesDescHash)->
+        new StateMachine statesDescHash

@@ -1,0 +1,55 @@
+!!!
+html(lang='en')
+  head
+    meta( charset='utf-8' )
+    meta( http-equiv='X-UA-Compatible', content='IE=edge,chrome=1' )
+    title 
+
+    style.
+      /* Spec description's whitespeace should be preserved */
+      .description {
+        white-space: pre;
+      }
+
+    //- Third-Party Libs
+    //- ================
+    //- - Polymer
+    script( src='../../vendor/polymer-all/polymer/polymer.js' )
+    //- - Jasmine
+    script( src='../../bower_components/jasmine/lib/jasmine-core/jasmine.js' )
+    link( rel='stylesheet', href='../../bower_components/jasmine/lib/jasmine-core/jasmine.css' )
+    script( src='../../bower_components/jasmine/lib/jasmine-core/jasmine-html.js' )
+
+    //- Helpers
+    //- =======
+    script( src='test-helpers.js' )
+
+    //- Import all specs
+    link( rel='import', href='generated-all-specs.html' )
+
+
+  body
+    polymer-element( name='v-test-runner' )
+      template
+        generated-all-specs#allspecs
+
+      :coffeescript
+        Polymer 'v-test-runner',
+          ready: ->
+            jasmine.WaitsForBlock.TIMEOUT_INCREMENT = 0
+            htmlReporter = new jasmine.HtmlReporter()
+            jasmineEnv = jasmine.getEnv()
+            jasmineEnv.updateInterval = 5000
+            jasmineEnv.addReporter htmlReporter
+            jasmineEnv.specFilter = (spec)-> htmlReporter.specFilter spec
+            jasmineEnv.execute()
+            return
+
+    v-test-runner
+
+    #garbageBin( style='display:none;' )
+    
+    //- livereload
+    script.
+      document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+    
