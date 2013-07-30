@@ -5,7 +5,9 @@ polymer-element( name='v-todo-input', extends='input', on-blur='onBlur', on-focu
 
       onFocus: ->
         @fire 'focused'
-        @asyncMethod @focus
+        @asyncMethod =>
+          #@setSelectionRange 0,10
+          @focus()
 
       onKeyup: (ev)->
         if ev.which in [13, 27]

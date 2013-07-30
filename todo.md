@@ -1,9 +1,15 @@
 TODO
 ====
 
+- icons
+  - new todo
+  - done/not-done
+
 - build
   - gruntjs
-    - addyosamani is experimenting with polymer a build process based on vulcanizer
+    - dev server
+    - watchers: jade, stylus, coffee
+    - prod build: addyosamani is experimenting with polymer a build process based on vulcanizer
 
 - stylus conversion of distributed nodes
   - polyfill comment

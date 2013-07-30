@@ -6,13 +6,20 @@ polymer-element(name='v-todos')
 
   template 
     link(rel='stylesheet', href='v-todos.css')
-
+    
     m-todos#model
 
-    .inputWrap
-      v-newtodo-input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
+    //- TODO: new polymer-element
+    .banner
+      button.btn-compose-newTodo &nbsp;
+      button.btn-settings &nbsp;
+      .title List Name
 
-    form.todos
+    //- TODO: Add this back, but make it modal-ly (can't interact with other todos)
+    //- .inputWrap
+    //-   v-newtodo-input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
+
+    form#todos
       template(repeat='{{ item in computed.filtered }}')
         v-todo-item( item='{{ item }}', on-deletetodo='onDeleteTodo')
 

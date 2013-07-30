@@ -22,4 +22,4 @@ polymer-element(name='v-todo-item', extends='li', \attributes='editing item')
       onEndEditingTodo:   -> @editing = false
       onStartEditingTodo: -> @editing = true
       onDeleteTodo: ->
-        @fire 'deletetodo', this.item
+        @fire 'deletetodo', @item
