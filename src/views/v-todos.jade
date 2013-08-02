@@ -19,8 +19,8 @@ polymer-element(name='v-todos')
     //- .inputWrap
     //-   v-newtodo-input#newTodo(placeholder='Enter new todo', on-keypress='onNewTodoKeypress')
 
-    form#todos
+    #todos
       template(repeat='{{ item in computed.filtered }}')
-        v-todo-item( item='{{ item }}', on-deletetodo='onDeleteTodo')
+        v-todo-item(item='{{ item }}', on-deletetodo='onDeleteTodo')
 
   script(src='v-todos.js')

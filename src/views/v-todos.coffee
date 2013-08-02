@@ -9,7 +9,7 @@ Polymer 'v-todos',
   # Determines what items should be filtered on to populate
   # `@filtered` array.
   # Acceptable values: 'all', 'active', or 'complete'.
-  filterOn: 'all'
+  filterOn: 'active'
 
   ready: ->
     ###
@@ -48,11 +48,11 @@ Polymer 'v-todos',
   1. Whenever window.location.hash changes
 
   If the window.location.hash is NOT an acceptable value, default
-  window.location.hash to '#/all'
+  window.location.hash to '#/active'
   ###
   updateFilterOn: ->
     unless @filterOn = HASH_TO_FILTER[window.location.hash]
-      window.location.hash = '#/all'
+      window.location.hash = '#/active'
 
   ###
   Reduces todo items to the ones that meet the `@filterOn` criteria.
@@ -60,12 +60,6 @@ Polymer 'v-todos',
   attribute of each todo item.
   ###
   reduceComputed: (prev,currentDone,i)->
-    # When i is 0, a new `reduce()` is happening so inital computed
-    # values need to be set.
-    # unless i
-    #   prev.completedCount = prev.activeCount = 0
-    #   prev.filtered.splice 0
-
     # When the `@items` is empty, currentDone is undefined and nothing
     # should be done.
     if currentDone?

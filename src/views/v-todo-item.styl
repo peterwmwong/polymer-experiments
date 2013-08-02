@@ -1,29 +1,107 @@
+@import 'buttons'
+
 @css {
   @host {
     v-todo-item {
       display: block;
       list-style: none;
-      padding: 15px 10px;
     }
   }
 }
 
 .wrap
+
   &.editing
-    > .deleteTodo
-      display none
+    position fixed
+    modal-padding = 10px
+    top modal-padding
+    bottom modal-padding
+    left modal-padding
+    right modal-padding
+    z-index 3
 
-  > .editTodoTextWrap
-    display block
-    overflow hidden
-
-    > .editTodoText
+    // Semi-transparent Black mask
+    &:before
+      content ''
       display block
-      font-size inherit
-      outline none
-      border none
+      position absolute
+      top -(modal-padding)
+      bottom -(modal-padding)
+      right -(modal-padding)
+      left -(modal-padding)
+      background-color #000
+      opacity 0.5
+      z-index -2
 
-  > .doneTodo
-    float left
-    margin-top 5px
-    margin-right 10px
+    // White BG
+    &:after
+      content ''
+      display block
+      position absolute
+      top 0
+      bottom 0
+      right 0
+      left 0
+      background-color #FFF
+      border-radius 3px
+      overflow hidden
+      z-index -1
+
+    > .basicPanel
+      border-bottom 1px solid #CCC
+
+      > .btn-close
+        button( rgba(255,255,255,0) )
+        float right
+        padding 0 5px 0 10px
+        color #CCC
+        font-size 22px
+        line-height 0px
+        height 20px
+
+    > .detailedPanel
+      > .header
+        background-color #F3F3F3
+        padding 5px 10px
+        font-size .75em
+        color #999
+
+      > .section
+        position relative
+        padding 15px 9px
+
+        > .notes
+          border none
+          border-radius 0
+          font-size inherit
+          margin 0
+          outline none
+          padding 0
+          width 100%
+
+          &::-webkit-input-placeholder
+            font-style italic
+            color #BBB
+
+
+  > .basicPanel
+    padding 15px 10px
+
+    > .editTodoTextWrap
+      display block
+      overflow hidden
+      padding 2px
+
+      > .editTodoText
+        display block
+        font-size inherit
+        outline none
+        border none
+        padding 0
+        margin 0
+        width 100%
+
+    > .doneTodo
+      float left
+      margin-top 5px
+      margin-right 10px
