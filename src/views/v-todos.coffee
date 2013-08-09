@@ -10,6 +10,8 @@ Polymer 'v-todos',
   # `@filtered` array.
   # Acceptable values: 'all', 'active', or 'complete'.
   filterOn: 'active'
+  first:
+    text: 'FIRST'
 
   ready: ->
     ###

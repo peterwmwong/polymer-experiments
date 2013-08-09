@@ -5,61 +5,80 @@
     v-todo-item {
       display: block;
       list-style: none;
+      z-index: 1;
     }
   }
 }
 
-.wrap
+.btn-back
+  cursor pointer
+  position fixed
+  z-index 4
+  top 5px
+  left 0px
+
+  color #BBB
+  background-color rgba(0,0,0,.5)
+  text-align center
+  line-height 34px
+  height 38px
+  font-weight bold
+  font-size 26px
+  border-radius 0 5px 5px 0
+  padding 0 12px 0 8px
+
+#wrap
+  panel-border-radius = 3px
+  expansion-transition-duration = 300ms
+  -webkit-transition top expansion-transition-duration ease
+  // -webkit-transform translate3d(0,0,0)
 
   &.editing
     position fixed
-    modal-padding = 10px
-    top modal-padding
-    bottom modal-padding
-    left modal-padding
-    right modal-padding
+    bottom 0px
+    top 0px !important
+    left 5px
+    right 5px
     z-index 3
 
     // Semi-transparent Black mask
-    &:before
-      content ''
+    > .blackbg
       display block
-      position absolute
-      top -(modal-padding)
-      bottom -(modal-padding)
-      right -(modal-padding)
-      left -(modal-padding)
+      position fixed
+      top 0px
+      bottom 0px
+      right 0px
+      left 0px
       background-color #000
-      opacity 0.5
-      z-index -2
-
-    // White BG
-    &:after
-      content ''
-      display block
-      position absolute
-      top 0
-      bottom 0
-      right 0
-      left 0
-      background-color #FFF
-      border-radius 3px
-      overflow hidden
+      opacity 0.65
       z-index -1
 
     > .basicPanel
       border-bottom 1px solid #CCC
+      // border-radius panel-border-radius panel-border-radius 0 0
+      margin-top 48px
+      background-color #FFF
+
+      > .editTodoTextWrap
+        > .editTodoTextReadOnly
+          display none
+        > .editTodoText
+          display block
 
       > .btn-close
         button( rgba(255,255,255,0) )
         float right
         padding 0 5px 0 10px
-        color #CCC
+        color #FFF
         font-size 22px
         line-height 0px
         height 20px
 
     > .detailedPanel
+      background-color #FFF
+      bottom 0
+      visibility visible
+
       > .header
         background-color #F3F3F3
         padding 5px 10px
@@ -83,17 +102,20 @@
             font-style italic
             color #BBB
 
+  > .blackbg
+    opacity 0
+    -webkit-transition opacity expansion-transition-duration ease
 
   > .basicPanel
+    overflow hidden
     padding 15px 10px
 
     > .editTodoTextWrap
-      display block
       overflow hidden
       padding 2px
 
       > .editTodoText
-        display block
+        display none
         font-size inherit
         outline none
         border none
@@ -105,3 +127,14 @@
       float left
       margin-top 5px
       margin-right 10px
+
+  > .detailedPanel
+    -webkit-transition bottom expansion-transition-duration ease
+    overflow hidden
+    position absolute
+    left 0
+    right 0
+    top 101px
+    bottom -100px
+    overflow hidden
+    visibility hidden

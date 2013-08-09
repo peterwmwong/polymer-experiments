@@ -13,3 +13,7 @@ TODO
 
 - stylus conversion of distributed nodes
   - polyfill comment
+
+
+- commit changes to Polymer/polymer
+  - "Initialize bindings"

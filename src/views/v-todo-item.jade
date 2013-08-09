@@ -1,37 +1,58 @@
-polymer-element(name='v-todo-item', extends='li', \attributes='editing item')
-  link(rel='import', href='v-todo-input.html')
+polymer-element( name='v-todo-item', extends='li', \attributes='editing item' )
+  link( rel='import', href='v-todo-input.html' )
 
   template
-    link(rel='stylesheet', href='v-todo-item.css')
+    link( rel='stylesheet', href='v-todo-item.css' )
 
-    .wrap(class='{{ editing:editing }}')
+    template( if="{{ editing }}" )
+      .btn-back( on-click="onEndEditingTodo" )
+        | &lt;
+
+    #wrap( on-click='onStartEditingTodo' )
+
+      .blackbg
 
       .basicPanel
-        template(if="{{ editing }}")
-          button.btn-close(on-click='onEndEditingTodo') x
 
-        .deleteTodo.btn-cancel(on-click='onDeleteTodo')
+        .deleteTodo.btn-cancel( on-click='onDeleteTodo' )
 
         .editTodoTextWrap
-          input.editTodoText(is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo')
+          input#editTodoText.editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo' )
+          a.editTodoTextReadOnly
+            | {{ item.text }}
 
-      template(if="{{ editing }}")
-        .detailedPanel
-          .header NOTES
-          .section
-            textarea.notes(value='{{ item.notes }}', placeholder='Leave yourself a note...')
+      //- TODO: extract into new element
+      .detailedPanel
+        .header NOTES
+        .section
+          textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...' )
 
 
   :coffeescript
     Polymer 'v-todo-item',
+      item: undefined
+      editing: false
       ready: ->
         @editing = false
-
         # TODO: remove me, just for dev
         # @asyncMethod ->
-        #   @editing = @item.text is 'ONE'
+        #   @editing = @item.text is 'TWO'
 
-      onEndEditingTodo:   -> @editing = false
-      onStartEditingTodo: -> @editing = true
+      onEndEditingTodo: ->
+        @editing = false
+        @$.wrap.classList.add 'editing-end'
+        @$.wrap.classList.remove 'editing'
+        setTimeout (=>
+          @$.wrap.classList.remove 'editing-end'
+        ), 250
+
       onDeleteTodo: ->
         @fire 'deletetodo', @item
+
+      onStartEditingTodo: ->
+        unless @editing
+          @$.wrap.setAttribute 'style', "top:#{@offsetTop - document.body.scrollTop - 48}px;"
+          setTimeout (=>
+            @$.wrap.classList.add 'editing'
+            setTimeout (=>@editing = true), 550
+          ), 100
