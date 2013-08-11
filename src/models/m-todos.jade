@@ -3,23 +3,11 @@ polymer-element( name='m-todos' )
     Polymer 'm-todos',
 
       # TODO: Load todos from localstorage or REST resource
-      items: [
-          {text: 'ONE', done: false}
-          {text: 'TWO', done: false, notes:'blah blah blah blah blah blah'}
-          {text: 'THREE', done: true}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-          {text: 'FOUR', done: false}
-        ]
+      items: 
+        for i in [0..15]
+          text: "#{i}"
+          done: false
+          notes: "Notes for #{i}"
 
       addTodo: ({text,done})->
         @items.push {text,done}

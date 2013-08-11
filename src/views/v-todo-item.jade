@@ -1,4 +1,4 @@
-polymer-element( name='v-todo-item', extends='li', \attributes='editing item' )
+polymer-element( name='v-todo-item', extends='li', \attributes='item' )
   link( rel='import', href='v-todo-input.html' )
 
   template
@@ -10,25 +10,28 @@ polymer-element( name='v-todo-item', extends='li', \attributes='editing item' )
 
     #wrap( on-click='onStartEditingTodo' )
 
-      .blackbg
+      #blackbg
 
-      .basicPanel
+      #panelContainer
 
-        .deleteTodo.btn-cancel( on-click='onDeleteTodo' )
+        .basicPanel
+          .deleteTodo.btn-cancel( on-click='onDeleteTodo' )
 
-        .editTodoTextWrap
-          input#editTodoText.editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo' )
-          a.editTodoTextReadOnly
-            | {{ item.text }}
+          .editTodoTextWrap
+            input#editTodoText.editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo' )
+            a.editTodoTextReadOnly
+              | {{ item.text }}
 
-      //- TODO: extract into new element
-      .detailedPanel
-        .header NOTES
-        .section
-          textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...' )
+        //- TODO: extract into new element
+        .detailedPanelContainer
+          #detailedPanel
+            .header NOTES
+            .section
+              textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...' )
 
 
   :coffeescript
+    ANIMATION_DURATION_MS = 400
     Polymer 'v-todo-item',
       item: undefined
       editing: false
@@ -39,20 +42,31 @@ polymer-element( name='v-todo-item', extends='li', \attributes='editing item' )
         #   @editing = @item.text is 'TWO'
 
       onEndEditingTodo: ->
-        @editing = false
-        @$.wrap.classList.add 'editing-end'
-        @$.wrap.classList.remove 'editing'
+        # Animation start
+        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
+        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-480px,0);'
+        @$.blackbg.setAttribute 'style', 'opacity: 0'
+
         setTimeout (=>
-          @$.wrap.classList.remove 'editing-end'
-        ), 250
+          @editing = false
+          @$.panelContainer.setAttribute 'style', ''
+          @$.detailedPanel.setAttribute 'style', ''
+          @$.blackbg.setAttribute 'style', ''
+          @$.wrap.classList.remove 'editing'
+        ), ANIMATION_DURATION_MS
 
       onDeleteTodo: ->
         @fire 'deletetodo', @item
 
       onStartEditingTodo: ->
         unless @editing
-          @$.wrap.setAttribute 'style', "top:#{@offsetTop - document.body.scrollTop - 48}px;"
-          setTimeout (=>
+          # Animation before start
+          @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
+          @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-480px,0);'
+
+          requestAnimationFrame =>
+            # Animation start
+            @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
+            @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
             @$.wrap.classList.add 'editing'
-            setTimeout (=>@editing = true), 550
-          ), 100
+            setTimeout (=>@editing = true), ANIMATION_DURATION_MS

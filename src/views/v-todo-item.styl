@@ -5,6 +5,7 @@
     v-todo-item {
       display: block;
       list-style: none;
+      min-height: 54px;
       z-index: 1;
     }
   }
@@ -29,20 +30,12 @@
 
 #wrap
   panel-border-radius = 3px
-  expansion-transition-duration = 300ms
-  -webkit-transition top expansion-transition-duration ease
-  // -webkit-transform translate3d(0,0,0)
+  expansion-transition-duration = 400ms
 
   &.editing
-    position fixed
-    bottom 0px
-    top 0px !important
-    left 5px
-    right 5px
-    z-index 3
 
     // Semi-transparent Black mask
-    > .blackbg
+    > #blackbg
       display block
       position fixed
       top 0px
@@ -51,90 +44,104 @@
       left 0px
       background-color #000
       opacity 0.65
-      z-index -1
+      z-index 1
 
-    > .basicPanel
-      border-bottom 1px solid #CCC
-      // border-radius panel-border-radius panel-border-radius 0 0
-      margin-top 48px
-      background-color #FFF
+    > #panelContainer
+      -webkit-transition -webkit-transform expansion-transition-duration
+      position fixed
+      bottom 0px
+      top 0px
+      left 0px
+      right 0px
+      z-index 2
 
-      > .editTodoTextWrap
-        > .editTodoTextReadOnly
-          display none
-        > .editTodoText
-          display block
+      > .basicPanel
+        border-bottom 1px solid #CCC
+        margin-top 48px
+        background-color #FFF
 
-      > .btn-close
-        button( rgba(255,255,255,0) )
-        float right
-        padding 0 5px 0 10px
-        color #FFF
-        font-size 22px
-        line-height 0px
-        height 20px
+        > .editTodoTextWrap
+          > .editTodoTextReadOnly
+            display none
+          > .editTodoText
+            display block
 
-    > .detailedPanel
-      background-color #FFF
-      bottom 0
-      visibility visible
+        > .btn-close
+          button( rgba(255,255,255,0) )
+          float right
+          padding 0 5px 0 10px
+          color #FFF
+          font-size 22px
+          line-height 0px
+          height 20px
 
-      > .header
-        background-color #F3F3F3
-        padding 5px 10px
-        font-size .75em
-        color #999
+      > .detailedPanelContainer
 
-      > .section
-        position relative
-        padding 15px 9px
+        > #detailedPanel
+          background-color #FFF
 
-        > .notes
-          border none
-          border-radius 0
-          font-size inherit
-          margin 0
-          outline none
-          padding 0
-          width 100%
+          > .header
+            background-color #F3F3F3
+            padding 5px 10px
+            font-size .75em
+            color #999
 
-          &::-webkit-input-placeholder
-            font-style italic
-            color #BBB
+          > .section
+            position relative
+            padding 15px 9px
 
-  > .blackbg
+            > .notes
+              border none
+              border-radius 0
+              font-size inherit
+              margin 0
+              outline none
+              padding 0
+              width 100%
+
+              &::-webkit-input-placeholder
+                font-style italic
+                color #BBB
+
+  > #blackbg
     opacity 0
     -webkit-transition opacity expansion-transition-duration ease
 
-  > .basicPanel
+  > #panelContainer
     overflow hidden
-    padding 15px 10px
+    -webkit-transform translate3d(0,0,0)
 
-    > .editTodoTextWrap
+    > .basicPanel
       overflow hidden
-      padding 2px
+      padding 15px 10px
 
-      > .editTodoText
-        display none
-        font-size inherit
-        outline none
-        border none
-        padding 0
-        margin 0
-        width 100%
+      > .editTodoTextWrap
+        overflow hidden
+        padding 2px
 
-    > .doneTodo
-      float left
-      margin-top 5px
-      margin-right 10px
+        > .editTodoText
+          display none
+          font-size inherit
+          outline none
+          border none
+          padding 0
+          margin 0
+          width 100%
 
-  > .detailedPanel
-    -webkit-transition bottom expansion-transition-duration ease
-    overflow hidden
-    position absolute
-    left 0
-    right 0
-    top 101px
-    bottom -100px
-    overflow hidden
-    visibility hidden
+      > .doneTodo
+        float left
+        margin-top 5px
+        margin-right 10px
+
+    > .detailedPanelContainer
+      position absolute
+      overflow hidden
+      top 101px
+      bottom 0
+      left 0
+      right 0
+      
+      > #detailedPanel
+        -webkit-transition -webkit-transform expansion-transition-duration ease
+        -webkit-transform translate3d(0,-480px,0)
+        height 100%
