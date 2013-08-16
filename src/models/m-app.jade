@@ -1,0 +1,15 @@
+polymer-element( name='m-app' )
+  :coffeescript
+    'use strict'
+
+    mApp =
+      _state: 'lists/default'
+
+    Object.defineProperty mApp,
+        'state'
+        get: -> mApp._state
+        set: (newState)->
+          console.log newState?.id
+          mApp._state = newState
+
+    Polymer 'm-app', mApp

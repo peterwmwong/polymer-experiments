@@ -11,12 +11,13 @@
   }
 }
 
-.btn-back
+#btnBack
   cursor pointer
+  display none
   position fixed
-  z-index 4
+  z-index 5
   top 5px
-  left 0px
+  left 0
 
   color #BBB
   background-color rgba(0,0,0,.5)
@@ -28,37 +29,43 @@
   border-radius 0 5px 5px 0
   padding 0 12px 0 8px
 
+  &.editing
+    display block
+
 #wrap
   panel-border-radius = 3px
   expansion-transition-duration = 400ms
+  -webkit-transition background-color expansion-transition-duration
 
   &.editing
+    position fixed
+    bottom 0px
+    top 0px
+    left 0px
+    right 0px
+    z-index 3
+    overflow scroll
+    -webkit-overflow-scrolling touch
 
-    // Semi-transparent Black mask
-    > #blackbg
-      display block
-      position fixed
-      top 0px
-      bottom 0px
-      right 0px
-      left 0px
-      background-color #000
-      opacity 0.65
-      z-index 1
+    background-color rgba(0,0,0,.65) !important
+
+    &:before
+      content ''
+      height 101%
+      width 0
+      background-color #0F0
+      float left
+      z-index 100
 
     > #panelContainer
       -webkit-transition -webkit-transform expansion-transition-duration
-      position fixed
-      bottom 0px
-      top 0px
-      left 0px
-      right 0px
-      z-index 2
+      height auto
 
       > .basicPanel
         border-bottom 1px solid #CCC
         margin-top 48px
         background-color #FFF
+        padding 15px 10px
 
         > .editTodoTextWrap
           > .editTodoTextReadOnly
@@ -78,7 +85,8 @@
       > .detailedPanelContainer
 
         > #detailedPanel
-          background-color #FFF
+          visibility visible
+          -webkit-transform translate3d(0,0,0)
 
           > .header
             background-color #F3F3F3
@@ -103,17 +111,18 @@
                 font-style italic
                 color #BBB
 
-  > #blackbg
-    opacity 0
-    -webkit-transition opacity expansion-transition-duration ease
 
   > #panelContainer
+    position relative
+    height 54px
     overflow hidden
-    -webkit-transform translate3d(0,0,0)
+    z-index 1
 
     > .basicPanel
       overflow hidden
-      padding 15px 10px
+      padding 15px 15px
+      -webkit-transform translate3d(0,0,0)
+      z-index 2
 
       > .editTodoTextWrap
         overflow hidden
@@ -134,14 +143,11 @@
         margin-right 10px
 
     > .detailedPanelContainer
-      position absolute
       overflow hidden
-      top 101px
-      bottom 0
-      left 0
-      right 0
-      
+
       > #detailedPanel
         -webkit-transition -webkit-transform expansion-transition-duration ease
-        -webkit-transform translate3d(0,-480px,0)
-        height 100%
+        -webkit-transform translate3d(0,-100%,0)
+        background-color #FFF
+        z-index 1
+        visibility hidden

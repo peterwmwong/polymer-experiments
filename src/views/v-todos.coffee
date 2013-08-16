@@ -4,8 +4,7 @@ HASH_TO_FILTER =
   '#/active': 'active'
   '#/complete': 'complete'
 
-Polymer 'v-todos',
-
+v_todos =
   # Determines what items should be filtered on to populate
   # `@filtered` array.
   # Acceptable values: 'all', 'active', or 'complete'.
@@ -107,3 +106,10 @@ Polymer 'v-todos',
   ###
   onDeleteTodo: (ev, item)->
     @$.model.removeTodo item
+
+Object.defineProperty(v_todos, prop, desc) for prop,desc of do->
+  isEditingTodo:
+    get: -> true
+    set: ->
+
+Polymer 'v-todos', v_todos

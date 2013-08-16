@@ -4,13 +4,10 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
   template
     link( rel='stylesheet', href='v-todo-item.css' )
 
-    template( if="{{ editing }}" )
-      .btn-back( on-click="onEndEditingTodo" )
-        | &lt;
+    #btnBack( on-click="onEndEditingTodo" )
+      | &lt;
 
     #wrap( on-click='onStartEditingTodo' )
-
-      #blackbg
 
       #panelContainer
 
@@ -43,15 +40,14 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
 
       onEndEditingTodo: ->
         # Animation start
+        @editing = false
         @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
-        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-480px,0);'
-        @$.blackbg.setAttribute 'style', 'opacity: 0'
+        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
 
         setTimeout (=>
-          @editing = false
           @$.panelContainer.setAttribute 'style', ''
           @$.detailedPanel.setAttribute 'style', ''
-          @$.blackbg.setAttribute 'style', ''
+          @$.btnBack.classList.remove 'editing'
           @$.wrap.classList.remove 'editing'
         ), ANIMATION_DURATION_MS
 
@@ -60,13 +56,13 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
 
       onStartEditingTodo: ->
         unless @editing
+          @editing = true
           # Animation before start
           @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
-          @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-480px,0);'
 
           requestAnimationFrame =>
             # Animation start
             @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
-            @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
+            @$.btnBack.classList.add 'editing'
             @$.wrap.classList.add 'editing'
-            setTimeout (=>@editing = true), ANIMATION_DURATION_MS
+
