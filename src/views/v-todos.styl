@@ -80,27 +80,9 @@ banner-height = 1.75em
     &::-webkit-input-placeholder
       font-style italic
 
-
-// Semi-transparent Black mask
-#blackbg
-  display block
-  position fixed
-  top 0px
-  bottom 0px
-  right 0px
-  left 0px
-  background-color #000
-  opacity 0
-  z-index -1
-  -webkit-transition opacity 300ms ease
-
-  &.editingTodo
-    opacity 0.65
-    z-index 4
-
 #todos
   margin-top 3em
-  z-index 2
+  z-index 1
 
   &.editing
     display none

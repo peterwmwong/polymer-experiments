@@ -35,7 +35,9 @@
 #wrap
   panel-border-radius = 3px
   expansion-transition-duration = 400ms
-  -webkit-transition background-color expansion-transition-duration
+  position relative
+  background-color rgba(0,0,0,0)
+  -webkit-transition background-color expansion-transition-duration ease
 
   &.editing
     position fixed
@@ -43,28 +45,26 @@
     top 0px
     left 0px
     right 0px
+    padding 0 5px
     z-index 3
     overflow scroll
     -webkit-overflow-scrolling touch
-
-    background-color rgba(0,0,0,.65) !important
+    background-color rgba(0,0,0,0.65)
 
     &:before
       content ''
       height 101%
       width 0
-      background-color #0F0
       float left
-      z-index 100
 
     > #panelContainer
       -webkit-transition -webkit-transform expansion-transition-duration
       height auto
+      z-index 2
 
       > .basicPanel
         border-bottom 1px solid #CCC
         margin-top 48px
-        background-color #FFF
         padding 15px 10px
 
         > .editTodoTextWrap
@@ -111,6 +111,8 @@
                 font-style italic
                 color #BBB
 
+  &.bgout
+    background-color rgba(0,0,0,0)
 
   > #panelContainer
     position relative
@@ -119,6 +121,7 @@
     z-index 1
 
     > .basicPanel
+      background-color #FFF
       overflow hidden
       padding 15px 15px
       -webkit-transform translate3d(0,0,0)

@@ -24,7 +24,7 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
           #detailedPanel
             .header NOTES
             .section
-              textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...' )
+              textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...', on-focus='onNotesFocus' )
 
 
   :coffeescript
@@ -34,27 +34,49 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
       editing: false
       ready: ->
         @editing = false
-        # TODO: remove me, just for dev
-        # @asyncMethod ->
-        #   @editing = @item.text is 'TWO'
+
+      preventOverscroll: (e)->
+        # TODO: polymer/CustomElement/something is wrapping elements in a way
+        #       that scrollTop can't be set!
+        el = @$.wrap.impl
+        startTopScroll = el.scrollTop
+
+        if startTopScroll <= 0
+          el.scrollTop = 1
+
+        if startTopScroll + el.offsetHeight >= el.scrollHeight
+          el.scrollTop = el.scrollHeight - el.offsetHeight - 1
+        return
 
       onEndEditingTodo: ->
         # Animation start
         @editing = false
         @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
         @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
+        @$.wrap.classList.add 'bgout'
+        @$.wrap.style.backgroundColor = 'rgba(0,0,0,0)'
 
         setTimeout (=>
           @$.panelContainer.setAttribute 'style', ''
           @$.detailedPanel.setAttribute 'style', ''
           @$.btnBack.classList.remove 'editing'
           @$.wrap.classList.remove 'editing'
+          @$.wrap.classList.remove 'bgout'
+          @$.wrap.style.backgroundColor = ''
         ), ANIMATION_DURATION_MS
 
       onDeleteTodo: ->
         @fire 'deletetodo', @item
 
-      onStartEditingTodo: ->
+      onNotesFocus: ->
+        window.scrollTo 0, 0
+
+      onStartEditingTodo: (e)->
+        savedScrollY = window.scrollY
+        window.scrollTo 0, savedScrollY
+        @asyncMethod =>
+          window.scrollTo 0, savedScrollY
+
         unless @editing
           @editing = true
           # Animation before start
@@ -65,4 +87,8 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
             @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
             @$.btnBack.classList.add 'editing'
             @$.wrap.classList.add 'editing'
+
+            @$.wrap.addEventListener 'touchstart', ((e)=>@preventOverscroll(e)), true
+
+
 
