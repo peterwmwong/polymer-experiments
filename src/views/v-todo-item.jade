@@ -28,13 +28,22 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
 
 
   :coffeescript
+    # TODO: Reassess Web Animations
+    #       We're doing a lot of adhoc coding of transitions.
+    #       Some in CSS. Some in JS. Let's unify.
     ANIMATION_DURATION_MS = 400
+
     Polymer 'v-todo-item',
       item: undefined
       editing: false
       ready: ->
         @editing = false
+        @boundPreventOverscroll = => @preventOverscroll()
 
+      # HACK(iOS): When a user attempts to scroll an overflow:scroll elements 
+      #            passed it's limits (top or bottom), iOS then scrolls the 
+      #            document.  This doesn't work for modals, as the user will be
+      #            scrolling stuff below the modal... and that's just weird.
       preventOverscroll: (e)->
         # TODO: polymer/CustomElement/something is wrapping elements in a way
         #       that scrollTop can't be set!
@@ -54,11 +63,14 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
         @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
         @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
         @$.wrap.classList.add 'bgout'
-        @$.wrap.style.backgroundColor = 'rgba(0,0,0,0)'
+        @$.wrap.removeEventListener 'touchstart', @boundPreventOverscroll, true
 
         setTimeout (=>
           @$.panelContainer.setAttribute 'style', ''
           @$.detailedPanel.setAttribute 'style', ''
+
+          # HACK(iOS/Polymer): Fix blink when adding/removing 'editing' class 
+          #                    using case statement Polymer/ExpressionSyntax 
           @$.btnBack.classList.remove 'editing'
           @$.wrap.classList.remove 'editing'
           @$.wrap.classList.remove 'bgout'
@@ -72,6 +84,9 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
         window.scrollTo 0, 0
 
       onStartEditingTodo: (e)->
+        # HACK(iOS): Fix auto scroll on input focus.  It mispositions up fixed
+        #            positioned items causing weird visual defects (banner not
+        #            at the top, black bg doesn't cover completely)
         savedScrollY = window.scrollY
         window.scrollTo 0, savedScrollY
         @asyncMethod =>
@@ -87,8 +102,4 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
             @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
             @$.btnBack.classList.add 'editing'
             @$.wrap.classList.add 'editing'
-
-            @$.wrap.addEventListener 'touchstart', ((e)=>@preventOverscroll(e)), true
-
-
-
+            @$.wrap.addEventListener 'touchstart', @boundPreventOverscroll, true
