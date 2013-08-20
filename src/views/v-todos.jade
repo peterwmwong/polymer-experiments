@@ -11,11 +11,11 @@ polymer-element( name='v-todos' )
 
     #todos
       template(repeat='{{ item in computed.filtered }}')
-        v-todo-item(item='{{ item }}', on-deletetodo='onDeleteTodo')
+        v-todo-item(item='{{ item }}', on-deletetodo='onDeleteTodo', on-collapse='onCollapseTodo')
 
     //- TODO: new polymer-element
     .banner
-      button.btn-compose-newTodo &nbsp;
+      button.btn-compose-newTodo( on-click='onNewTodo' ) &nbsp;
       button.btn-settings &nbsp;
       .title List Name
 

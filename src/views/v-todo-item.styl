@@ -1,7 +1,7 @@
 @import 'buttons'
 
 panel-border-radius = 3px
-expansion-transition-duration = 400ms
+expansion-transition-duration = 250ms
 
 @css {
   @host {
@@ -15,24 +15,27 @@ expansion-transition-duration = 400ms
 
 #btnBack
   cursor pointer
-  display none
   position fixed
   z-index 4
   top 5px
   left 0
 
   color #BBB
-  background-color rgba(0,0,0,.5)
+  background-color rgba(0,0,0,.75)
   text-align center
   line-height 34px
   height 38px
   font-weight bold
   font-size 26px
-  border-radius 0 5px 5px 0
+  border-radius 0 3px 3px 0
   padding 0 12px 0 8px
 
+  -webkit-transition -webkit-transform (expansion-transition-duration/2) ease
+  -webkit-transform translate3d(-100%,0,0)
+
   &.editing
-    display block
+    -webkit-transform translate3d(0,0,0)
+    
 
 #wrap
   position relative
@@ -49,7 +52,7 @@ expansion-transition-duration = 400ms
     z-index 3
     overflow scroll
     -webkit-overflow-scrolling touch
-    background-color rgba(0,0,0,0.65)
+    background-color rgba(0,0,0,0.75)
 
     &:before
       content ''
@@ -65,14 +68,16 @@ expansion-transition-duration = 400ms
       z-index 2
 
       > .basicPanel
-        border-bottom 1px solid #CCC
+        background-color #FFF
+        border-bottom 1px solid #DDD
         margin-top 48px
         padding 15px 10px
 
         > .editTodoTextWrap
+          color #F77
           > .editTodoTextReadOnly
             display none
-          > .editTodoText
+          > #editTodoText
             display block
 
         > .btn-close
@@ -91,13 +96,13 @@ expansion-transition-duration = 400ms
 
           > .header
             background-color #F3F3F3
-            padding 5px 10px
-            font-size .75em
+            padding 5px 12px
+            font-size .6em
             color #999
 
           > .section
             position relative
-            padding 15px 9px
+            padding 10px 9px
 
             > .notes
               border none
@@ -107,6 +112,7 @@ expansion-transition-duration = 400ms
               outline none
               padding 0
               width 100%
+              color #777
 
               &::-webkit-input-placeholder
                 font-style italic
@@ -120,9 +126,9 @@ expansion-transition-duration = 400ms
     height 54px
     overflow hidden
     z-index 1
+    color #777
 
     > .basicPanel
-      background-color #FFF
       overflow hidden
       padding 15px 15px
       -webkit-transform translate3d(0,0,0)
@@ -132,7 +138,7 @@ expansion-transition-duration = 400ms
         overflow hidden
         padding 2px
 
-        > .editTodoText
+        > #editTodoText
           display none
           font-size inherit
           outline none
@@ -140,6 +146,7 @@ expansion-transition-duration = 400ms
           padding 0
           margin 0
           width 100%
+          color #777
 
       > .doneTodo
         float left

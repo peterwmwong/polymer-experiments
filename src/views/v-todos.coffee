@@ -5,12 +5,9 @@ HASH_TO_FILTER =
   '#/complete': 'complete'
 
 v_todos =
-  # Determines what items should be filtered on to populate
-  # `@filtered` array.
+  # Determines what items should be filtered on to populate `@filtered` array.
   # Acceptable values: 'all', 'active', or 'complete'.
   filterOn: 'active'
-  first:
-    text: 'FIRST'
 
   ready: ->
     ###
@@ -87,19 +84,14 @@ v_todos =
   filterOnChanged: ->
     @computedReduction.reduce()
 
-  onClearCompleted: ->
-    @$.model.clearCompleted()
-
   ###
   Creates a new todo, when the enter key is pressed and input
   is not empty.
   ###
-  onNewTodoKeypress: ({which})->
-    if which is 13 and @$.newTodo.value
-      @$.model.addTodo
-        text: @$.newTodo.value
-        done: false
-      @$.newTodo.value = ''
+  onNewTodo: ->
+    @$.model.addTodo
+      text: ''
+      done: false
 
   ###
   Delete todo.
@@ -107,9 +99,16 @@ v_todos =
   onDeleteTodo: (ev, item)->
     @$.model.removeTodo item
 
-Object.defineProperty(v_todos, prop, desc) for prop,desc of do->
-  isEditingTodo:
-    get: -> true
-    set: ->
+  onCollapseTodo: (ev, item)->
+    # If the todo is new... 
+    if item.$new
+      # ... and empty, consider it a mistake and destroy it
+      if not item.text
+        @onDeleteTodo ev, item
+
+      # ... otherwise scroll to it
+      else
+        delete item.$new
+        @asyncMethod => window.scrollTo 0, 0
 
 Polymer 'v-todos', v_todos

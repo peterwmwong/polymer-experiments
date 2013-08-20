@@ -1,4 +1,4 @@
-polymer-element( name='v-todo-item', extends='li', \attributes='item' )
+polymer-element( name='v-todo-item', \attributes='item' )
   link( rel='import', href='v-todo-input.html' )
 
   template
@@ -12,10 +12,8 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
       #panelContainer
 
         .basicPanel
-          .deleteTodo.btn-cancel( on-click='onDeleteTodo' )
-
           .editTodoTextWrap
-            input#editTodoText.editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo' )
+            input#editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo', on-blurred='onBlur', on-keypres='onKeypress' )
             a.editTodoTextReadOnly
               | {{ item.text }}
 
@@ -24,18 +22,24 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
           #detailedPanel
             .header NOTES
             .section
-              textarea.notes( value='{{ item.notes }}', placeholder='Leave yourself a note...', on-focus='onNotesFocus' )
+              textarea.notes( value='{{ item.notes }}', rows='7', placeholder='Leave yourself a note...')
 
 
   :coffeescript
     # TODO: Reassess Web Animations
     #       We're doing a lot of adhoc coding of transitions.
     #       Some in CSS. Some in JS. Let's unify.
-    ANIMATION_DURATION_MS = 400
+    ANIMATION_DURATION_MS = 250
 
     Polymer 'v-todo-item',
       item: undefined
       editing: false
+
+      itemChanged: ->
+        if @item.$new
+          @onStartEditingTodo()
+          setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS
+
       ready: ->
         @editing = false
         @boundPreventOverscroll = => @preventOverscroll()
@@ -57,31 +61,8 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
           el.scrollTop = el.scrollHeight - el.offsetHeight - 1
         return
 
-      onEndEditingTodo: ->
-        # Animation start
-        @editing = false
-        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
-        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
-        @$.wrap.classList.add 'bgout'
-        @$.wrap.removeEventListener 'touchstart', @boundPreventOverscroll, true
-
-        setTimeout (=>
-          @$.panelContainer.setAttribute 'style', ''
-          @$.detailedPanel.setAttribute 'style', ''
-
-          # HACK(iOS/Polymer): Fix blink when adding/removing 'editing' class 
-          #                    using case statement Polymer/ExpressionSyntax 
-          @$.btnBack.classList.remove 'editing'
-          @$.wrap.classList.remove 'editing'
-          @$.wrap.classList.remove 'bgout'
-          @$.wrap.style.backgroundColor = ''
-        ), ANIMATION_DURATION_MS
-
-      onDeleteTodo: ->
-        @fire 'deletetodo', @item
-
-      onNotesFocus: ->
-        window.scrollTo 0, 0
+      onBlur: (ev,fromKeyboard)->
+        @onEndEditingTodo() if fromKeyboard
 
       onStartEditingTodo: (e)->
         # HACK(iOS): Fix auto scroll on input focus.  It mispositions up fixed
@@ -103,3 +84,25 @@ polymer-element( name='v-todo-item', extends='li', \attributes='item' )
             @$.btnBack.classList.add 'editing'
             @$.wrap.classList.add 'editing'
             @$.wrap.addEventListener 'touchstart', @boundPreventOverscroll, true
+
+      onEndEditingTodo: ->
+        @fire 'collapse', @item
+
+        # Animation start
+        @editing = false
+        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
+        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
+        @$.wrap.classList.add 'bgout'
+        @$.wrap.removeEventListener 'touchstart', @boundPreventOverscroll, true
+        @$.btnBack.classList.remove 'editing'
+
+        setTimeout (=>
+          @$.panelContainer.setAttribute 'style', ''
+          @$.detailedPanel.setAttribute 'style', ''
+
+          # HACK(iOS/Polymer): Fix blink when adding/removing 'editing' class 
+          #                    using case statement Polymer/ExpressionSyntax 
+          @$.wrap.classList.remove 'editing'
+          @$.wrap.classList.remove 'bgout'
+          @$.wrap.style.backgroundColor = ''
+        ), ANIMATION_DURATION_MS

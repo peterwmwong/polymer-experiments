@@ -5,12 +5,12 @@ polymer-element( name='m-todos' )
       # TODO: Load todos from localstorage or REST resource
       items: 
         for i in [0..15]
-          text: "#{i}"
+          text: "Do this #{i}"
           done: false
           notes: "Notes for #{i}"
 
       addTodo: ({text,done})->
-        @items.push {text,done}
+        @items.unshift {text,done,$new:true}
 
       removeTodo: (todo)->
         if -1 < id = @items.indexOf todo

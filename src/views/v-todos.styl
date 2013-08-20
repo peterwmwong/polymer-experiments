@@ -19,8 +19,8 @@ banner-height = 1.75em
   height banner-height
   line-height 1.8em
   font-size 1.25em
-  color #888
-  gradient lighten(#EEE,50%) #EEE
+  color #999
+  background-color #F3F3F3
   border-top 1px solid #FFF
   border-bottom 1px solid #DDD
   padding 5px 0px
@@ -33,15 +33,10 @@ banner-height = 1.75em
   right 0
   z-index 1
 
-  > .title
-    // display inline-block
-    // background-color #888
-    text-shadow 0px 1px #FFF
-
   > .btn-compose-newTodo, > .btn-settings
     button( rgba(255,255,255,0) )
     height 100%
-    color #CCC
+    color #DDD
     font-size 1.25em
     line-height 20px
     font-weight bold
@@ -81,14 +76,14 @@ banner-height = 1.75em
       font-style italic
 
 #todos
-  margin-top 3em
+  margin-top 47px
   z-index 1
 
   &.editing
     display none
 
   v-todo-item
-    border-bottom 1px solid #EEE
+    border-bottom 1px solid #F3F3F3
 
     &:last-child
       border-bottom none
