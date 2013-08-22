@@ -1,5 +1,6 @@
-@import 'gradient'
 @import 'buttons'
+@import 'colors'
+@import 'constants'
 
 @css {
   @host {
@@ -12,37 +13,41 @@
   }
 }
 
-banner-height = 1.75em
-
 .banner
   text-align center
-  height banner-height
-  line-height 1.8em
+  height 3*base-font-size
+  line-height 3*base-font-size
   font-size 1.25em
-  color #999
-  background-color #F3F3F3
+  color grayscale-1
+  background-color grayscale-4
   border-top 1px solid #FFF
-  border-bottom 1px solid #DDD
-  padding 5px 0px
+  border-bottom 1px solid grayscale-3
   vertical-align bottom
+  overflow hidden
+  box-sizing border-box
 
-  position fixed
+  position absolute
   top 0
-  bottom 0
   left 0
   right 0
-  z-index 1
+  z-index 2
 
   > .btn-compose-newTodo, > .btn-settings
     button( rgba(255,255,255,0) )
-    height 100%
-    color #DDD
+    height 2.75*base-font-size
+    line-height 2.5*base-font-size
+    color darken(grayscale-3,5%)
     font-size 1.25em
-    line-height 20px
-    font-weight bold
-    float right
-    vertical-align top
     position relative
+
+    &:before
+      content '+'
+      display block
+      position absolute
+      top 0
+      left 0
+      right 0
+      text-align center
 
     &.btn-settings
       float left
@@ -50,15 +55,9 @@ banner-height = 1.75em
       &:before
         content '='
 
-    &:before
-      content '+'
-      display block
-      position absolute
-      top 5px
-      bottom 0
-      left 0
-      right 0
-      text-align center
+    &.btn-compose-newTodo
+      float right
+
 
 .inputWrap
   display none
@@ -76,14 +75,28 @@ banner-height = 1.75em
       font-style italic
 
 #todos
-  margin-top 47px
+  background-color color-white
+  margin-top 3em
   z-index 1
+  position absolute
+  top 0
+  bottom 0
+  left 0
+  right 0
+  overflow scroll
+  -webkit-overflow-scrolling touch
 
-  &.editing
-    display none
+  > .todo
+    border-bottom 1px solid grayscale-4
+    color grayscale-0
+    display block
+    padding 1em
+    text-decoration none
 
-  v-todo-item
-    border-bottom 1px solid #F3F3F3
-
-    &:last-child
-      border-bottom none
+#todoDetails
+  position absolute
+  top 0
+  left 0
+  right 0
+  bottom 0
+  z-index 0

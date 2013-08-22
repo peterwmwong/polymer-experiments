@@ -5,17 +5,17 @@ expansion-transition-duration = 250ms
 
 @css {
   @host {
-    v-todo-item {
+    * {
       display: block;
-      list-style: none;
       min-height: 54px;
+      font-size: 16px;
     }
   }
 }
 
 #btnBack
   cursor pointer
-  position fixed
+  position absolute
   z-index 4
   top 5px
   left 0
@@ -38,18 +38,18 @@ expansion-transition-duration = 250ms
     
 
 #wrap
-  position relative
+  position absolute
+  bottom 0px
+  top 0px
+  left 0px
+  right 0px
+  padding 0 5px
+  z-index 3
   background-color rgba(0,0,0,0)
   -webkit-transition background-color expansion-transition-duration ease
 
   &.editing
-    position fixed
-    bottom 0px
-    top 0px
-    left 0px
-    right 0px
     padding 0 5px
-    z-index 3
     overflow scroll
     -webkit-overflow-scrolling touch
     background-color rgba(0,0,0,0.75)

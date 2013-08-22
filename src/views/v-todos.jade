@@ -1,8 +1,9 @@
+link( rel='import', href='../models/m-todos.html' )
+link( rel='import', href='v-newtodo-input.html' )
+link( rel='import', href='v-todo-item.html' )
+script( src='../helpers/ArrayReduction.js' )
+  
 polymer-element( name='v-todos' )
-  link( rel='import', href='../models/m-todos.html' )
-  link( rel='import', href='v-newtodo-input.html' )
-  link( rel='import', href='v-todo-item.html' )
-  script( src='../helpers/ArrayReduction.js' )
 
   template 
     link( rel='stylesheet', href='v-todos.css' )
@@ -10,14 +11,64 @@ polymer-element( name='v-todos' )
     m-todos#model
 
     #todos
-      template(repeat='{{ item in computed.filtered }}')
-        v-todo-item(item='{{ item }}', on-deletetodo='onDeleteTodo', on-collapse='onCollapseTodo')
+      template( repeat='{{ todo in $.model.todos }}' )
+        a.todo( href='../#',
+                touch-action='pan-y',
+                on-click='openTodoDetails',
+                on-pointerup='openTodoDetails')
+          | {{ todo.text }}
 
     //- TODO: new polymer-element
     .banner
-      button.btn-compose-newTodo( on-click='onNewTodo' ) &nbsp;
-      button.btn-settings &nbsp;
-      .title List Name
+      button.btn-compose-newTodo( touch-action='none',
+                                  on-click='onNewTodo',
+                                  on-pointerup='onNewTodo' )
+      button.btn-settings
+      .title
+        | List Name
 
+    v-todo-item#todoDetails( todo='{{ expandedTodo }}'
+                             on-deletetodo='onDeleteTodo'
+                             on-collapse='onCollapseTodo' )
 
-  script(src='v-todos.js')
+  :coffeescript
+    Polymer 'v-todos',
+      expandedTodo: undefined
+
+      openTodoDetails: (ev)->
+        unless @expandedTodo
+          @expandedTodo =
+            model: ev.target.templateInstance.model.todo
+            element: ev.target
+          # TODO[ polyfill(Object.observe) ]: Remove when Object.observe() is on all
+          #                                   supported browsers.
+          Platform.performMicrotaskCheckpoint()
+
+      ###
+      Creates a new todo, when the enter key is pressed and input
+      is not empty.
+      ###
+      onNewTodo: ->
+        unless @expandedTodo
+          @expandedTodo = model:
+            text: ''
+            done: false
+            $new: true
+          Platform.performMicrotaskCheckpoint()
+
+      ###
+      Delete todo.
+      ###
+      onDeleteTodo: (ev, todo)->
+        @$.model.removeTodo todo
+
+      onCollapseTodo: (ev, todo)->
+        if todo is @expandedTodo
+          @expandedTodo = undefined
+
+          # If the todo is new and NOT empty, add the new todo
+          if todo.model.$new and todo.model.text
+            delete todo.model.$new
+            @$.model.addTodo todo.model
+
+          Platform.performMicrotaskCheckpoint()

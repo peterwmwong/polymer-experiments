@@ -1,28 +1,28 @@
-polymer-element( name='v-todo-item', \attributes='item' )
+polymer-element( name='v-todo-item', \attributes='todo todoTop' )
   link( rel='import', href='v-todo-input.html' )
 
   template
     link( rel='stylesheet', href='v-todo-item.css' )
 
-    #btnBack( on-click="onEndEditingTodo" )
+    #btnBack( touch-action="none",
+              on-click="onEndEditingTodo",
+              on-pointerup="onEndEditingTodo" )
       | &lt;
 
-    #wrap( on-click='onStartEditingTodo' )
+    #wrap( on-click='onStartEditingTodo')
 
       #panelContainer
 
         .basicPanel
           .editTodoTextWrap
-            input#editTodoText( is='v-todo-input', value='{{ item.text }}', on-focused='onStartEditingTodo', on-blurred='onBlur', on-keypres='onKeypress' )
-            a.editTodoTextReadOnly
-              | {{ item.text }}
+            input#editTodoText( is='v-todo-input', value='{{ todo.model.text }}', on-focused='onStartEditingTodo', on-blurred='onBlur', on-keypres='onKeypress' )
 
         //- TODO: extract into new element
         .detailedPanelContainer
           #detailedPanel
             .header NOTES
             .section
-              textarea.notes( value='{{ item.notes }}', rows='7', placeholder='Leave yourself a note...')
+              textarea.notes( value='{{ todo.model.notes }}', rows='7', placeholder='Leave yourself a note...', on-click='onNotesFocus')
 
 
   :coffeescript
@@ -32,17 +32,25 @@ polymer-element( name='v-todo-item', \attributes='item' )
     ANIMATION_DURATION_MS = 250
 
     Polymer 'v-todo-item',
-      item: undefined
+      todoTop: 0
+      todo: undefined
       editing: false
 
-      itemChanged: ->
-        if @item.$new
+      todoChanged: ->
+        if @todo
           @onStartEditingTodo()
-          setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS
+          # HACK(iOS): Delayed focus avoids a flicker
+          setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS*1.5
 
       ready: ->
         @editing = false
-        @boundPreventOverscroll = => @preventOverscroll()
+        @asyncMethod ->
+          @$.wrap.addEventListener 'touchstart', => @preventOverscroll()
+
+      getTranslateY: ->
+        if @todo.element
+          @todo.element.offsetTop - @todo.element.parentNode.scrollTop
+        else 0
 
       # HACK(iOS): When a user attempts to scroll an overflow:scroll elements 
       #            passed it's limits (top or bottom), iOS then scrolls the 
@@ -61,39 +69,35 @@ polymer-element( name='v-todo-item', \attributes='item' )
           el.scrollTop = el.scrollHeight - el.offsetHeight - 1
         return
 
+      # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
+      #            up, causing the cancel/back button to go offscreen.
+      onNotesFocus: ->
+        @asyncMethod => window.scrollTo 0,0
+
       onBlur: (ev,fromKeyboard)->
         @onEndEditingTodo() if fromKeyboard
 
       onStartEditingTodo: (e)->
-        # HACK(iOS): Fix auto scroll on input focus.  It mispositions up fixed
-        #            positioned items causing weird visual defects (banner not
-        #            at the top, black bg doesn't cover completely)
-        savedScrollY = window.scrollY
-        window.scrollTo 0, savedScrollY
-        @asyncMethod =>
-          window.scrollTo 0, savedScrollY
-
         unless @editing
+          @$.editTodoText.blur()
+
+          @.style.zIndex = 999
           @editing = true
           # Animation before start
-          @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
+          @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
 
           requestAnimationFrame =>
             # Animation start
             @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
             @$.btnBack.classList.add 'editing'
             @$.wrap.classList.add 'editing'
-            @$.wrap.addEventListener 'touchstart', @boundPreventOverscroll, true
 
       onEndEditingTodo: ->
-        @fire 'collapse', @item
-
         # Animation start
         @editing = false
-        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@offsetTop - 48 - document.body.scrollTop}px,0);"
+        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
         @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
         @$.wrap.classList.add 'bgout'
-        @$.wrap.removeEventListener 'touchstart', @boundPreventOverscroll, true
         @$.btnBack.classList.remove 'editing'
 
         setTimeout (=>
@@ -105,4 +109,6 @@ polymer-element( name='v-todo-item', \attributes='item' )
           @$.wrap.classList.remove 'editing'
           @$.wrap.classList.remove 'bgout'
           @$.wrap.style.backgroundColor = ''
+          @.style.zIndex = ''
+          @fire 'collapse', @todo
         ), ANIMATION_DURATION_MS
