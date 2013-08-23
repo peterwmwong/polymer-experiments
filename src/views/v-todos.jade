@@ -75,5 +75,6 @@ polymer-element( name='v-todos' )
           if todo.model.$new and todo.model.text
             delete todo.model.$new
             @$.model.addTodo todo.model
+            @$.todos.impl.scrollTop = 0
 
           Platform.performMicrotaskCheckpoint()
