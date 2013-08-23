@@ -8,9 +8,11 @@
     "node": ">=0.10.12"
   },
   "dependencies": {
+    "cheerio": "~0.12.1",
     "coffee-script": "1.6.3",
     "connect": "~2.7.5",
     "jade": "0.31.2",
+    "nopt": "~2.1.2",
     "stylus": "0.32.1"
   }
 }

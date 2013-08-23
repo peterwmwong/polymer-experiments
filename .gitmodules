@@ -1,3 +1,6 @@
 [submodule "vendor/polymer-all"]
 	path = vendor/polymer-all
 	url = git@github.com:peterwmwong/polymer-all.git
+[submodule "vendor/labs"]
+	path = vendor/labs
+	url = https://github.com/Polymer/labs.git
