@@ -1,3 +1,4 @@
+@import 'colors'
 @import 'buttons'
 
 panel-border-radius = 3px
@@ -20,7 +21,7 @@ expansion-transition-duration = 250ms
   top 5px
   left 0
 
-  color #BBB
+  color grayscale-2
   background-color rgba(0,0,0,.75)
   text-align center
   line-height 34px
@@ -68,23 +69,22 @@ expansion-transition-duration = 250ms
       z-index 2
 
       > .basicPanel
-        background-color #FFF
-        border-bottom 1px solid #DDD
+        background-color color-white
+        border-bottom 1px solid grayscale-3
         margin-top 48px
         padding 15px 10px
 
         > .editTodoTextWrap
-          color #F77
           > .editTodoTextReadOnly
             display none
           > #editTodoText
             display block
 
         > .btn-close
-          button( rgba(255,255,255,0) )
+          button( rgba(color-white,0) )
           float right
           padding 0 5px 0 10px
-          color #FFF
+          color color-white
           font-size 22px
           line-height 0px
           height 20px
@@ -95,10 +95,10 @@ expansion-transition-duration = 250ms
           -webkit-transform translate3d(0,0,0)
 
           > .header
-            background-color #F3F3F3
+            background-color grayscale-4
             padding 5px 12px
             font-size .6em
-            color #999
+            color grayscale-1
 
           > .section
             position relative
@@ -112,11 +112,11 @@ expansion-transition-duration = 250ms
               outline none
               padding 0
               width 100%
-              color #777
+              color grayscale-0
 
               &::-webkit-input-placeholder
                 font-style italic
-                color #BBB
+                color grayscale-2
 
   &.bgout
     background-color rgba(0,0,0,0)
@@ -126,7 +126,7 @@ expansion-transition-duration = 250ms
     height 54px
     overflow hidden
     z-index 1
-    color #777
+    color grayscale-0
 
     > .basicPanel
       overflow hidden
@@ -146,7 +146,7 @@ expansion-transition-duration = 250ms
           padding 0
           margin 0
           width 100%
-          color #777
+          color grayscale-0
 
       > .doneTodo
         float left
@@ -159,4 +159,4 @@ expansion-transition-duration = 250ms
       > #detailedPanel
         -webkit-transition -webkit-transform expansion-transition-duration ease
         -webkit-transform translate3d(0,-100%,0)
-        background-color #FFF
+        background-color color-white

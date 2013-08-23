@@ -1,5 +1,8 @@
-polymer-element( name='v-todo-item', \attributes='todo todoTop' )
-  link( rel='import', href='v-todo-input.html' )
+link( rel='import', href='v-todo-input.html' )
+
+
+
+polymer-element( name='v-todo-item', \attributes='todo' )
 
   template
     link( rel='stylesheet', href='v-todo-item.css' )
@@ -9,20 +12,25 @@ polymer-element( name='v-todo-item', \attributes='todo todoTop' )
               on-pointerup="onEndEditingTodo" )
       | &lt;
 
-    #wrap( on-click='onStartEditingTodo')
-
+    #wrap
       #panelContainer
 
         .basicPanel
           .editTodoTextWrap
-            input#editTodoText( is='v-todo-input', value='{{ todo.model.text }}', on-focused='onStartEditingTodo', on-blurred='onBlur', on-keypres='onKeypress' )
+            input#editTodoText( is='v-todo-input',
+                                value='{{ todo.model.text }}',
+                                on-blurred='onBlur',
+                                on-keypres='onKeypress' )
 
         //- TODO: extract into new element
         .detailedPanelContainer
           #detailedPanel
             .header NOTES
             .section
-              textarea.notes( value='{{ todo.model.notes }}', rows='7', placeholder='Leave yourself a note...', on-click='onNotesFocus')
+              textarea.notes( value='{{ todo.model.notes }}',
+                              rows='7',
+                              placeholder='Leave yourself a note...',
+                              on-click='onNotesFocus' )
 
 
   :coffeescript
@@ -32,9 +40,11 @@ polymer-element( name='v-todo-item', \attributes='todo todoTop' )
     ANIMATION_DURATION_MS = 250
 
     Polymer 'v-todo-item',
-      todoTop: 0
       todo: undefined
-      editing: false
+
+      ready: ->
+        @asyncMethod ->
+          @$.wrap.addEventListener 'touchstart', => @preventOverscroll()
 
       todoChanged: ->
         if @todo
@@ -42,11 +52,9 @@ polymer-element( name='v-todo-item', \attributes='todo todoTop' )
           # HACK(iOS): Delayed focus avoids a flicker
           setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS*1.5
 
-      ready: ->
-        @editing = false
-        @asyncMethod ->
-          @$.wrap.addEventListener 'touchstart', => @preventOverscroll()
-
+      ###
+      Returns the y-coordinate to animate to and from.
+      ###
       getTranslateY: ->
         if @todo.element
           @todo.element.offsetTop - @todo.element.parentNode.scrollTop
@@ -78,23 +86,20 @@ polymer-element( name='v-todo-item', \attributes='todo todoTop' )
         @onEndEditingTodo() if fromKeyboard
 
       onStartEditingTodo: (e)->
-        unless @editing
-          @$.editTodoText.blur()
+        @$.editTodoText.blur()
 
-          @.style.zIndex = 999
-          @editing = true
-          # Animation before start
-          @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
+        @.style.zIndex = 999
+        # Animation before start
+        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
 
-          requestAnimationFrame =>
-            # Animation start
-            @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
-            @$.btnBack.classList.add 'editing'
-            @$.wrap.classList.add 'editing'
+        requestAnimationFrame =>
+          # Animation start
+          @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
+          @$.btnBack.classList.add 'editing'
+          @$.wrap.classList.add 'editing'
 
       onEndEditingTodo: ->
         # Animation start
-        @editing = false
         @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
         @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
         @$.wrap.classList.add 'bgout'

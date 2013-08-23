@@ -15,7 +15,7 @@ polymer-element( name='v-todos' )
         a.todo( href='../#',
                 touch-action='pan-y',
                 on-click='openTodoDetails',
-                on-pointerup='openTodoDetails')
+                on-pointerup='openTodoDetails' )
           | {{ todo.text }}
 
     //- TODO: new polymer-element
@@ -35,6 +35,11 @@ polymer-element( name='v-todos' )
     Polymer 'v-todos',
       expandedTodo: undefined
 
+      ###
+      "Opens" a todo for a user...
+      1) to allow editing
+      2) to see further details (notes, alarms, etc.)
+      ###
       openTodoDetails: (ev)->
         unless @expandedTodo
           @expandedTodo =
@@ -63,7 +68,7 @@ polymer-element( name='v-todos' )
         @$.model.removeTodo todo
 
       onCollapseTodo: (ev, todo)->
-        if todo is @expandedTodo
+        if todo and (todo is @expandedTodo)
           @expandedTodo = undefined
 
           # If the todo is new and NOT empty, add the new todo
