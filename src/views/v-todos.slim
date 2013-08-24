@@ -1,37 +1,36 @@
-link( rel='import', href='../models/m-todos.html' )
-link( rel='import', href='v-todo-item.html' )
-script( src='../helpers/ArrayReduction.js' )
+link rel="import" href="../models/m-todos.html"
+link rel="import" href="v-todo-item.html"
   
-polymer-element( name='v-todos' )
+polymer-element name="v-todos"
 
   template 
-    link( rel='stylesheet', href='v-todos.css' )
+    link rel="stylesheet" href="v-todos.css"
     
     m-todos#model
 
     #todos
-      template( repeat='{{ todo in $.model.todos }}' )
-        a.todo( href='../#',
-                touch-action='pan-y',
-                on-click='openTodoDetails',
-                on-pointerup='openTodoDetails' )
+      template repeat="{{ todo in $.model.todos }}"
+        a.todo [ href="../#"
+                 touch-action="pan-y"
+                 on-click="openTodoDetails"
+                 on-pointerup="openTodoDetails" ]
           | {{ todo.text }}
 
-    //- TODO: new polymer-element
+    / TODO: new polymer-element
     .banner
-      button.btn-compose-newTodo( touch-action='none',
-                                  on-click='onNewTodo',
-                                  on-pointerup='onNewTodo' )
+      button.btn-compose-newTodo [ touch-action="none"
+                                   on-click="onNewTodo"
+                                   on-pointerup="onNewTodo" ]
       button.btn-settings
       .title
         | List Name
 
-    v-todo-item#todoDetails( todo='{{ expandedTodo }}'
-                             on-deletetodo='onDeleteTodo'
-                             on-collapse='onCollapseTodo' )
+    v-todo-item#todoDetails [ todo="{{ expandedTodo }}"
+                              on-deletetodo="onDeleteTodo"
+                              on-collapse="onCollapseTodo" ]
 
-  :coffeescript
-    Polymer 'v-todos',
+  coffee:
+    Polymer "v-todos",
       expandedTodo: undefined
 
       ###
@@ -55,7 +54,7 @@ polymer-element( name='v-todos' )
       onNewTodo: ->
         unless @expandedTodo
           @expandedTodo = model:
-            text: ''
+            text: ""
             done: false
             $new: true
           Platform.performMicrotaskCheckpoint()
@@ -74,6 +73,6 @@ polymer-element( name='v-todos' )
           if todo.model.$new and todo.model.text
             delete todo.model.$new
             @$.model.addTodo todo.model
-            @$.todos.impl.scrollTop = 0
+            @$.todos.scrollTop = 0
 
           Platform.performMicrotaskCheckpoint()

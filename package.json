@@ -11,8 +11,12 @@
     "cheerio": "~0.12.1",
     "coffee-script": "1.6.3",
     "connect": "~2.7.5",
-    "jade": "0.31.2",
-    "nopt": "~2.1.2",
-    "stylus": "0.32.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-watch": "~0.5.1",
+    "grunt-contrib-sass": "~0.4.1",
+    "grunt-slim": "~0.1.0",
+    "grunt-contrib-connect": "~0.3.0",
+    "nopt": "~2.1.2"
   }
 }

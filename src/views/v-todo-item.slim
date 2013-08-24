@@ -1,39 +1,38 @@
-link( rel='import', href='v-todo-input.html' )
+link rel='import' href='v-todo-input.html'
 
-
-
-polymer-element( name='v-todo-item', \attributes='todo' )
+polymer-element name='v-todo-item' attributes='todo'
 
   template
-    link( rel='stylesheet', href='v-todo-item.css' )
+    link rel='stylesheet' href='v-todo-item.css'
 
-    #btnBack( touch-action="none",
-              on-click="onEndEditingTodo",
-              on-pointerup="onEndEditingTodo" )
+    #btnBack [ touch-action="none"
+               on-click="onEndEditingTodo"
+               on-pointerup="onEndEditingTodo" ]
       | &lt;
 
     #wrap
       #panelContainer
-
         .basicPanel
           .editTodoTextWrap
-            input#editTodoText( is='v-todo-input',
-                                value='{{ todo.model.text }}',
-                                on-blurred='onBlur',
-                                on-keypres='onKeypress' )
+            input#editTodoText [ is="v-todo-input"
+                                 value="{{ todo.model.text }}"
+                                 on-blurred="onBlur"
+                                 on-keypres="onKeypress" ]
 
         //- TODO: extract into new element
         .detailedPanelContainer
           #detailedPanel
-            .header NOTES
+            .header
+              | NOTES
+
             .section
-              textarea.notes( value='{{ todo.model.notes }}',
-                              rows='7',
-                              placeholder='Leave yourself a note...',
-                              on-click='onNotesFocus' )
+              textarea.notes [ value="{{ todo.model.notes }}"
+                               rows="7"
+                               placeholder="Leave yourself a note..."
+                               on-click="onNotesFocus" ]
 
 
-  :coffeescript
+  coffee:
     # TODO: Reassess Web Animations
     #       We're doing a lot of adhoc coding of transitions.
     #       Some in CSS. Some in JS. Let's unify.
