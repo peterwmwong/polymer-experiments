@@ -1,0 +1,7 @@
+polymer-element name="generated-all-specs" attributes="specs"
+  template
+    //- List spec polymer-elements...
+
+  coffee:
+    Polymer 'generated-all-specs', ready: ->
+      @specs = @querySelectorAll '.spec'
