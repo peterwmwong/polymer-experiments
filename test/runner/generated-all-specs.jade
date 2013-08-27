@@ -1,9 +1,0 @@
-link( rel='import', href='/test/specs/helers/h-state-machine-spec.html' )
-
-polymer-element( name='generated-all-specs', \attributes='specs' )
-  template
-    h-state-machine-spec.spec
-
-  :coffeescript
-    Polymer 'generated-all-specs', ready: ->
-      @specs = @querySelectorAll '.spec'
