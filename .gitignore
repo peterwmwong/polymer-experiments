@@ -2,11 +2,8 @@
 ##############
 *.swp
 *.DS_Store
-*.js
-*.css
-*.map
-*.html
 
+dist/
 .sass-cache/
 node_modules/
 bower_components/

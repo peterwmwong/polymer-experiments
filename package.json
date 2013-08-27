@@ -12,6 +12,7 @@
     "coffee-script": "1.6.3",
     "connect": "~2.7.5",
     "grunt": "~0.4.1",
+    "grunt-exec": "~0.4.2",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-watch": "~0.5.1",
     "grunt-contrib-sass": "~0.4.1",
