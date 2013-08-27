@@ -1,0 +1,27 @@
+/ `h-ios-overflow-scroll` makes a container iOS scrollable, which means it does
+/  the following:
+/  1. Applies CSS (-webkit-overflow-scrolling: touch)
+/  2. Prevents "overscroll" (the document is scrolled instead of the container)
+/ 
+/  Example
+/  =======
+/ 
+/      <div>
+/        <h-ios-overflow-scroll />
+/      </div>
+polymer-element name="h-ios-overflow-scroll"
+  coffee:
+    Polymer 'h-ios-overflow-scroll',
+      enteredDocument: ->
+        el = @parentNode.host or @parentNode
+        el.style.webkitOverflowScrolling = 'touch'
+        el.addEventListener 'touchstart', (e)->
+          # TODO: polymer/CustomElement/something is wrapping elements in a way
+          #       that scrollTop can't be set!
+          startTopScroll = el.impl.scrollTop
+          if startTopScroll <= 0
+            el.impl.scrollTop = 1
+          else if startTopScroll + el.offsetHeight >= el.scrollHeight
+            el.impl.scrollTop = el.scrollHeight - el.offsetHeight - 1
+          return
+

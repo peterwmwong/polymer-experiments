@@ -1,9 +1,10 @@
-link rel='import' href='v-todo-input.html'
+link rel="import" href="v-todo-input.html"
+link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 
-polymer-element name='v-todo-item' attributes='todo'
+polymer-element name="v-todo-item" attributes="todo"
 
   template
-    link rel='stylesheet' href='v-todo-item.css'
+    link rel="stylesheet" href="v-todo-item.css"
 
     #btnBack [ touch-action="none"
                on-click="onEndEditingTodo"
@@ -11,15 +12,17 @@ polymer-element name='v-todo-item' attributes='todo'
       | &lt;
 
     #wrap
-      #panelContainer
-        .basicPanel
-          .editTodoTextWrap
-            input#editTodoText [ is="v-todo-input"
-                                 value="{{ todo.model.text }}"
-                                 on-blurred="onBlur"
-                                 on-keypres="onKeypress" ]
+      h-ios-overflow-scroll
 
-        //- TODO: extract into new element
+      #panelContainer
+        / TODO: Remove 2 layers of wraps
+        .basicPanel
+          input#editTodoText [ is="v-todo-input"
+                               value="{{ todo.model.text }}"
+                               on-blurred="onBlur"
+                               on-keypres="onKeypress" ]
+
+        / TODO: extract into new element
         .detailedPanelContainer
           #detailedPanel
             .header
@@ -31,7 +34,6 @@ polymer-element name='v-todo-item' attributes='todo'
                                placeholder="Leave yourself a note..."
                                on-click="onNotesFocus" ]
 
-
   coffee:
     # TODO: Reassess Web Animations
     #       We're doing a lot of adhoc coding of transitions.
@@ -40,10 +42,6 @@ polymer-element name='v-todo-item' attributes='todo'
 
     Polymer 'v-todo-item',
       todo: undefined
-
-      ready: ->
-        @asyncMethod ->
-          @$.wrap.addEventListener 'touchstart', => @preventOverscroll()
 
       todoChanged: ->
         if @todo
@@ -58,23 +56,6 @@ polymer-element name='v-todo-item' attributes='todo'
         if @todo.element
           @todo.element.offsetTop - @todo.element.parentNode.scrollTop
         else 0
-
-      # HACK(iOS): When a user attempts to scroll an overflow:scroll elements 
-      #            passed it's limits (top or bottom), iOS then scrolls the 
-      #            document.  This doesn't work for modals, as the user will be
-      #            scrolling stuff below the modal... and that's just weird.
-      preventOverscroll: (e)->
-        # TODO: polymer/CustomElement/something is wrapping elements in a way
-        #       that scrollTop can't be set!
-        el = @$.wrap.impl
-        startTopScroll = el.scrollTop
-
-        if startTopScroll <= 0
-          el.scrollTop = 1
-
-        if startTopScroll + el.offsetHeight >= el.scrollHeight
-          el.scrollTop = el.scrollHeight - el.offsetHeight - 1
-        return
 
       # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
       #            up, causing the cancel/back button to go offscreen.

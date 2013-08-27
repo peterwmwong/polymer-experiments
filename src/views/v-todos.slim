@@ -1,5 +1,6 @@
 link rel="import" href="../models/m-todos.html"
 link rel="import" href="v-todo-item.html"
+link rel="import" href="../helpers/h-ios-overflow-scroll.html"
   
 polymer-element name="v-todos"
 
@@ -9,9 +10,10 @@ polymer-element name="v-todos"
     m-todos#model
 
     #todos
+      h-ios-overflow-scroll
+
       template repeat="{{ todo in $.model.todos }}"
-        a.todo [ href="../#"
-                 touch-action="pan-y"
+        a.todo [ touch-action="pan-y"
                  on-click="openTodoDetails"
                  on-pointerup="openTodoDetails" ]
           | {{ todo.text }}
@@ -73,6 +75,9 @@ polymer-element name="v-todos"
           if todo.model.$new and todo.model.text
             delete todo.model.$new
             @$.model.addTodo todo.model
-            @$.todos.scrollTop = 0
+
+            # TODO: polymer/CustomElement/something is wrapping elements in a way
+            #       that scrollTop can't be set!
+            @$.todos.impl.scrollTop = 0
 
           Platform.performMicrotaskCheckpoint()

@@ -90,11 +90,11 @@
   left: 0;
   right: 0;
   overflow: scroll;
-  -webkit-overflow-scrolling: touch;
 
   > .todo {
     border-bottom: 1px solid $grayscale-4;
     color: $grayscale-0;
+    cursor: pointer;
     display: block;
     padding: 1em;
     text-decoration: none;
