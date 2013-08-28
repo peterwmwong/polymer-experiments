@@ -1,8 +1,9 @@
 @import 'colors.scss';
+@import 'constants.scss';
 
 html {
   background-color: #EEE;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: $font-content;
   height: 100%;
   -webkit-tap-highlight-color: rgba(255,255,255,0);
 }

@@ -5,8 +5,8 @@
 @host {
   * {
     display: block;
-    min-height: 54px;
     font-size: 16px;
+    min-height: 54px;
   }
 }
 
@@ -73,7 +73,7 @@
         background-color: $color-white;
         border-bottom: 1px solid $grayscale-3;
         margin-top: 48px;
-        padding: 17px 12px;
+        padding: 17px 10px;
 
         > #editTodoText {
           display: block;
@@ -101,6 +101,7 @@
               border: none;
               border-radius: 0;
               font-size: inherit;
+              font-family: $font-content;
               margin: 0;
               outline: none;
               padding: 0;
@@ -135,6 +136,7 @@
 
       > #editTodoText {
         display: none;
+        font-family: $font-content;
         font-size: inherit;
         outline: none;
         border: none;
