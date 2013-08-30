@@ -2,64 +2,77 @@
 module.exports = function(grunt) {
 
   var sourceDir = 'src/';
+  var test_sourceDir = 'test/';
+
+  // TODO: rename buildDir:build/ and test_buildDir:test_build/
   var distDir = 'dist/';
+  var test_distDir = 'test_build/';
+
   var extToTaskConfig = {
     coffee: {
-      task: ['coffee','dist'],
-      configFn: function(filepath) {
-        return {
-          options: {
-            bare: true,
-            sourceMap: true
-          },
-          expand: true,
-          src: (filepath && stripSourceDir(filepath) || '**/*.coffee'),
-          dest: distDir,
-          ext: '.js',
-          cwd: sourceDir
-        };
+      task: 'coffee',
+      config: {
+        ext: '.js',
+        options: {
+          bare: true,
+          sourceMap: true
+        }
       }
     },
 
     scss: {
-      task: ['sass','dist'],
-      configFn: function(filepath) {
-        return {
-          options: {
-            sourcemap: true,
-            loadPath: 'src/styles/mixins/'
-          },
-          expand: true,
-          cwd: sourceDir,
-          src: (filepath && stripSourceDir(filepath) || [
-            'views/**/*.scss',
-            '*.scss'
-          ]),
-          dest: distDir,
-          ext: '.css'
-        };
+      task: 'sass',
+      config: {
+        ext: '.css',
+        options: {
+          sourcemap: true,
+          loadPath: 'src/styles/mixins/'
+        }
       }
     },
 
     slim: {
-      task: ['slim','dist'],
-      configFn: function(filepath) {
-        return {
-          options: {
-            pretty: true
-          },
-          expand: true,
-          cwd: sourceDir,
-          src: (filepath && stripSourceDir(filepath) || ['**/*.slim']),
-          dest: distDir,
-          ext: '.html'
-        };
+      task: 'slim',
+      config: {
+        ext: '.html',
+        options: {
+          pretty: true
+        }
       }
     }
-
   };
-  function stripSourceDir(filepath) {
-    return filepath.replace(new RegExp('^'+sourceDir),'');
+
+  // Based on the filepath's base directory and extension, determine...
+  // 1) task
+  // 2) config
+  function getTaskConfigForFile(filepath) {
+    var filepaths = Array.isArray(filepath) ? filepath : [filepath];
+    var isFromTest = /^test\//.test(filepaths[0]);
+    var fileExt = /\.(\w+)$/.exec(filepaths[0])[1];
+    var taskConfig = extToTaskConfig[fileExt];
+
+    // Make filepath relative to sourceDir
+    filepaths = filepaths.map(function(path){
+      return path.replace(new RegExp('^'+sourceDir),'');
+    });
+
+    var config = {};
+    Object.keys(taskConfig.config).forEach(function(key){
+      config[key] = taskConfig.config[key];
+    });
+    
+    config.expand = true;
+    config.cwd = isFromTest ? test_sourceDir : sourceDir;
+    config.src = filepaths;
+    config.dest = isFromTest ? test_distDir : distDir;
+
+    return {
+      task: [
+        taskConfig.task,
+        (isFromTest ? 'test_dist' : 'dist')
+      ],
+      config: config
+    };
   }
 
   grunt.initConfig({
@@ -77,20 +90,23 @@ module.exports = function(grunt) {
     // Tasks
     // -----
     coffee: {
-      dist: extToTaskConfig.coffee.configFn()
+      dist: getTaskConfigForFile( 'src/**/*.coffee' ).config,
+      test_dist: getTaskConfigForFile( 'test/**/*.coffee' ).config
     },
 
     sass: {
-      dist: extToTaskConfig.scss.configFn()
+      dist: getTaskConfigForFile( 'src/**/*.scss' ).config,
+      test_dist: getTaskConfigForFile( 'test/**/*.scss' ).config
     },
 
     slim: {
-      dist: extToTaskConfig.slim.configFn()
+      dist: getTaskConfigForFile( 'src/**/*.slim' ).config,
+      test_dist: getTaskConfigForFile( 'test/**/*.slim' ).config
     },
 
     watch: {
       coffee: {
-        files: 'src/**/*.coffee',
+        files: ['src/**/*.coffee','test/**/*.coffee'],
         tasks: ['coffee:dist'],
         options: {
           livereload: true,
@@ -99,7 +115,7 @@ module.exports = function(grunt) {
       },
 
       sass: {
-        files: 'src/**/*.scss',
+        files: ['src/**/*.scss','test/**/*.scss'],
         tasks: ['sass:dist'],
         options: {
           livereload: true,
@@ -108,7 +124,7 @@ module.exports = function(grunt) {
       },
 
       slim: {
-        files: 'src/**/*.slim',
+        files: ['src/**/*.slim','test/**/*.slim'],
         tasks: ['slim:dist'],
         options: {
           livereload: true,
@@ -147,19 +163,17 @@ module.exports = function(grunt) {
   // The task used compiled the changed file is determined by the
   // changed file's extension.
   grunt.event.on('watch', function(action, filepath) {
-    var fileExt = /\.(\w+)$/.exec(filepath)[1];
-    var taskConfig = extToTaskConfig[fileExt];
-
-    grunt.config(taskConfig.task, taskConfig.configFn(filepath));
+    var taskConfig = getTaskConfigForFile(filepath);
+    grunt.config(taskConfig.task, taskConfig.config);
   });
 
-  grunt.registerTask('default',[
+  grunt.registerTask('default', [
     'coffee:dist',
     'sass:dist',
     'slim:dist'
   ]);
 
-  grunt.registerTask('wcbuild',[
+  grunt.registerTask('wcbuild', [
     'exec:vulcan'
   ]);
 };
