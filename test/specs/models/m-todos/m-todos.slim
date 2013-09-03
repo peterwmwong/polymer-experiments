@@ -1,0 +1,17 @@
+== html_test 'models/m-todos.html'
+
+  / Mock Dependencies
+  / -----------------
+  / polymer-element name='dependency-to-mock'
+  /   ...
+
+  / Test Element
+  / ------------
+  m-todos#mTodos
+  
+  coffee:
+    ready ->
+      mTodos = document.getElementById 'mTodos'
+      expect(mTodos.todos.length).to.equal 16
+      done()
+      

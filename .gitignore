@@ -3,7 +3,8 @@
 *.swp
 *.DS_Store
 
-dist/
+build/
+test_build/
 .sass-cache/
 node_modules/
 bower_components/
