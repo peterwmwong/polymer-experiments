@@ -1,28 +1,31 @@
-polymer-element name='m-todos'
+link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-localstorage/polymer-localstorage.html'
+
+polymer-element name='m-todos' attributes='todos'
+  template
+    css:
+      @host {
+        * { display: none; }
+      }
+
+    polymer-localstorage [ id="localstorage"
+                           name="ioi-store"
+                           value="{{todos}}"
+                           on-polymer-localstorage-load="onInitialStorageLoad" ]
+
   coffee:
     Polymer 'm-todos',
 
-      # TODO: Load todos from localstorage or REST resource
-      todos:
-        for i in [0..15]
-          text: "Do this #{i}"
-          done: false
-          notes: "Notes for #{i}"
+      todos: []
 
       addTodo: ({text,done})->
         @todos.unshift newTodo = {text,done}
+        @$.localstorage.save()
         newTodo
 
       removeTodo: (todo)->
-        if -1 < id = @todos.indexOf todo
+        if -1 < (id = @todos.indexOf todo)
           @todos.splice id, 1
+          @$.localstorage.save()
 
-      clearCompleted: ->
-        i=0
-        todos = @todos
-        `for(;i<todos.length;++i){`
-        if todos[i].done
-          todos.splice i, 1
-          --i
-        `}`
-        return
+      onInitialStorageLoad: ->
+        @asyncFire 'm-todos-load'

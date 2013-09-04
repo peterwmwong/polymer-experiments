@@ -71,7 +71,7 @@
       runHTMLTest(done, src);
     };
     testfn.toString = function(){
-      return "// see "+src;
+      return "http://"+window.location.host+"/test_build/specs/"+src;
     };
     test(src, testfn);
   };
