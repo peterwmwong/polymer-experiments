@@ -1,22 +1,22 @@
 link rel="import" href="../models/m-todos.html"
 link rel="import" href="v-todo-item.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
-  
+
 polymer-element name="v-todos"
 
-  template 
+  template
     link rel="stylesheet" href="v-todos.css"
-    
+
     m-todos#model
 
     #todos
-      h-ios-overflow-scroll
-
       template repeat="{{ todo in $.model.todos }}"
         a.todo [ touch-action="pan-y"
                  on-click="openTodoDetails"
                  on-pointerup="openTodoDetails" ]
           | {{ todo.text }}
+
+      h-ios-overflow-scroll
 
     / TODO: new polymer-element
     .banner
@@ -25,7 +25,7 @@ polymer-element name="v-todos"
                                    on-pointerup="onNewTodo" ]
       button.btn-settings
       .title
-        | List Name
+        | Groceries
 
     v-todo-item#todoDetails [ todo="{{ expandedTodo }}"
                               on-deletetodo="onDeleteTodo"

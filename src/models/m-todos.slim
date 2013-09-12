@@ -2,14 +2,9 @@ link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-locals
 
 polymer-element name='m-todos' attributes='todos'
   template
-    css:
-      @host {
-        * { display: none; }
-      }
-
     polymer-localstorage [ id="localstorage"
                            name="ioi-store"
-                           value="{{todos}}"
+                           value="{{ todos }}"
                            on-polymer-localstorage-load="onInitialStorageLoad" ]
 
   coffee:
@@ -28,4 +23,7 @@ polymer-element name='m-todos' attributes='todos'
           @$.localstorage.save()
 
       onInitialStorageLoad: ->
+        unless @todos
+          @todos = []
+          @$.localstorage.save()
         @asyncFire 'm-todos-load'
