@@ -1,17 +1,9 @@
-link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-localstorage/polymer-localstorage.html'
+link rel='import' href='../helpers/h-resource.html'
 
-polymer-element name='m-todos' attributes='todos'
-  template
-    css:
-      @host {
-        * { display: none; }
-      }
-
-    polymer-localstorage [ id="localstorage"
-                           name="ioi-store"
-                           value="{{todos}}"
-                           on-polymer-localstorage-load="onInitialStorageLoad" ]
-
+polymer-element [ name="m-todos"
+                  extends="h-resource"
+                  attributes="filterBy"
+                  storeuid="ioi-store" ]
   coffee:
     Polymer 'm-todos',
 

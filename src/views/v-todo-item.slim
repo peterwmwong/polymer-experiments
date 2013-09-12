@@ -14,6 +14,8 @@ polymer-element name="v-todo-item" attributes="todo"
     #wrap
       h-ios-overflow-scroll
 
+      h-resource-item item="{{ todo.model }}" on-change="onTodoChange"
+
       #panelContainer
         / TODO: Remove 2 layers of wraps
         .basicPanel
@@ -56,6 +58,9 @@ polymer-element name="v-todo-item" attributes="todo"
         if @todo.element
           @todo.element.offsetTop - @todo.element.parentNode.scrollTop
         else 0
+
+      onTodoChange: ->
+        @todo.model.save() if @todo?.model?.$status isnt 'new'
 
       # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
       #            up, causing the cancel/back button to go offscreen.

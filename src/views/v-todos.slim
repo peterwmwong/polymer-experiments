@@ -7,12 +7,12 @@ polymer-element name="v-todos"
   template 
     link rel="stylesheet" href="v-todos.css"
     
-    m-todos#model
+    m-todos#todosCollection
 
     #todos
       h-ios-overflow-scroll
 
-      template repeat="{{ todo in $.model.todos }}"
+      template repeat="{{ todo in $.todosCollection }}"
         a.todo [ touch-action="pan-y"
                  on-click="openTodoDetails"
                  on-pointerup="openTodoDetails" ]
@@ -28,7 +28,6 @@ polymer-element name="v-todos"
         | List Name
 
     v-todo-item#todoDetails [ todo="{{ expandedTodo }}"
-                              on-deletetodo="onDeleteTodo"
                               on-collapse="onCollapseTodo" ]
 
   coffee:
@@ -56,25 +55,19 @@ polymer-element name="v-todos"
       onNewTodo: ->
         unless @expandedTodo
           @expandedTodo = model:
-            text: ""
-            done: false
-            $new: true
+            @$.model.$create
+              text: ""
+              done: false
+              $new: true
           Platform.performMicrotaskCheckpoint()
-
-      ###
-      Delete todo.
-      ###
-      onDeleteTodo: (ev, todo)->
-        @$.model.removeTodo todo
 
       onCollapseTodo: (ev, todo)->
         if todo and (todo is @expandedTodo)
           @expandedTodo = undefined
 
           # If the todo is new and NOT empty, add the new todo
-          if todo.model.$new and todo.model.text
-            delete todo.model.$new
-            @$.model.addTodo todo.model
+          if (todo.model.$$status is 'new') and todo.model.text
+            todo.model.$save()
 
             # TODO: polymer/CustomElement/something is wrapping elements in a way
             #       that scrollTop can't be set!

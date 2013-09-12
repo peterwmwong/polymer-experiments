@@ -1,0 +1,44 @@
+link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-localstorage/polymer-localstorage.html'
+
+polymer-element name='h-resource' attributes='items storeuid'
+  template
+    css:
+      @host {
+        * { display: none; }
+      }
+
+    polymer-localstorage [ id="localstorage"
+                           name="{{ storeuid }}"
+                           value="{{ rawResults }}"
+                           on-polymer-localstorage-load="onInitialStorageLoad" ]
+
+  coffee:
+    Item = (@$$resource, dataObj)->
+      # load data from dataObj
+      @[k] = v for k,v of dataObj
+      return
+
+    Item.prototype =
+      # loading -> ok
+      # deleting -> deleted
+      # new -> saving -> ok
+      $$status: 'loaded'
+      $refresh: ->
+      $save: ->
+      $delete: ->
+
+    Resource = (@$$backend)->
+      @all = []
+
+    Resource.prototype =
+      status: 'loading'
+      $create: (dataObj)->
+        new Resource @, dataObj
+      $delete: (item)->
+
+    Polymer 'h-resource',
+      rawResults: []
+      items: []
+      rawResultsChanged: ->
+        @items = @rawResults?.map (el)->
+          new Item @, el
