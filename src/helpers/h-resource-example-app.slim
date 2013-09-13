@@ -61,8 +61,6 @@ polymer-element [ name="r-myresource"
         get:
           url: 'http://localhost:9200/myresource'
 
-
-
 link rel="import" href="h-resource-collection"
 link rel="import" href="h-resource-item"
 link rel="import" href="r-myresource"
@@ -72,15 +70,11 @@ polymer-element name="v-app" noscript=""
     / Instantiates a Resource (HTTP, LocalStorage, WebSocket, or whatever)
     r-todos#todos
 
-    h-resource-action [ action="get"
-                        options="{{ {id:todoid} }}"
-                        resource="{{ $.todos }}"
+    r-todos-item [ resource="{{ $.todos }}"
+                   todo-id="{{ selectedTodoId }}" ]
 
-    r-todos-item [ todo-id=""
-                   resource= "{{ $.todos }}" ]
-
-    r-todos-collection [  ]
-
+    r-todos-collection [ resource="{{ $.todos }}"
+                         query="{{ {done:doneFilter, text:textFilter} }}" ]
 
     / 
     / Resource usage examples
