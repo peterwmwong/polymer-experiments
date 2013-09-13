@@ -12,8 +12,7 @@ polymer-element name="v-todos"
     #todos
       template repeat="{{ todo in $.model.todos }}"
         a.todo [ touch-action="pan-y"
-                 on-click="openTodoDetails"
-                 on-pointerup="openTodoDetails" ]
+                 on-tap="openTodoDetails" ]
           | {{ todo.text }}
 
       h-ios-overflow-scroll
@@ -21,8 +20,7 @@ polymer-element name="v-todos"
     / TODO: new polymer-element
     .banner
       button.btn-compose-newTodo [ touch-action="none"
-                                   on-click="onNewTodo"
-                                   on-pointerup="onNewTodo" ]
+                                   on-tap="onNewTodo" ]
       button.btn-settings
       .title
         | Groceries

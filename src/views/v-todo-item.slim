@@ -7,8 +7,7 @@ polymer-element name="v-todo-item" attributes="todo"
     link rel="stylesheet" href="v-todo-item.css"
 
     #btnBack [ touch-action="none"
-               on-click="onEndEditingTodo"
-               on-pointerup="onEndEditingTodo" ]
+               on-tap="onEndEditingTodo" ]
       | &lt;
 
     #wrap
@@ -19,8 +18,7 @@ polymer-element name="v-todo-item" attributes="todo"
         .basicPanel
           input#editTodoText [ is="v-todo-input"
                                value="{{ todo.model.text }}"
-                               on-blurred="onBlur"
-                               on-keypres="onKeypress" ]
+                               on-blurred="onBlur" ]
 
         / TODO: extract into new element
         .detailedPanelContainer

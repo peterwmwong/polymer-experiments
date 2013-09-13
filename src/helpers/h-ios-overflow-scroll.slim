@@ -1,3 +1,4 @@
+/
 / `h-ios-overflow-scroll` makes a container iOS scrollable, which means it does
 /  the following:
 /  1. Applies CSS (-webkit-overflow-scrolling: touch)
@@ -9,10 +10,13 @@
 /      <div>
 /        <h-ios-overflow-scroll />
 /      </div>
+/ 
+/ TODO: If the parent/host doesn't have enough content to force scroll,
+/       element needs to grow (invisibly) to force scroll.
 polymer-element name="h-ios-overflow-scroll"
   coffee:
     Polymer 'h-ios-overflow-scroll',
-      enteredDocument: ->
+      enteredView: ->
         el = @parentNode.host or @parentNode
         el.style.webkitOverflowScrolling = 'touch'
         el.addEventListener 'touchstart', (e)->
@@ -24,4 +28,3 @@ polymer-element name="h-ios-overflow-scroll"
           else if startTopScroll + el.offsetHeight >= el.scrollHeight
             el.impl.scrollTop = el.scrollHeight - el.offsetHeight - 1
           return
-
