@@ -1,0 +1,40 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todo_item [ item_id="{{ item_id }}"
+                                     item="{{ todo }}" ]
+      
+    coffee:
+      Polymer 't-test',
+        item_id: 1
+
+        # Retrieved todo will be written to @todo
+        todo: undefined
+
+        enteredView: ->
+          @async ->
+            DESCRIBE = 'When localStorage is empty,'
+            expect(@todo, "#{DESCRIBE} @todo is set undefined")
+              .to.equal undefined
+            
+            DESCRIBE = 'When saving a new item,'
+            @item_id = undefined
+            @async ->
+              @todo =
+                text: 'foo'
+                done: true
+              debugger
+              @$.todo_item.save()
+
+              @async ->
+                storageValue = window.localStorage.getItem 'ioi-store'
+                expect(JSON.parse(storageValue), 'it is written to storage')
+                  .to.deep.equal [ text: 'foo', done: true ]
+
+                done()

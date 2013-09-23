@@ -1,0 +1,53 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one',   notes: 'one notes', done: true}
+      {text: 'two',   notes: 'two notes', done: false}
+      {text: 'three', notes: 'three notes', done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      Polymer 't-test',
+        item_id: undefined
+
+        # Retrieved todo will be written to @todo
+        todo: undefined
+
+        # Begin test when todo has been retrieved
+        todoChanged: ->
+          return unless @todo
+          unless @testStarted
+            @testStarted = true
+            @startTest()
+
+        startTest: ->
+          DESCRIBE = 'When @item_id is undefined (new item),'
+          @item_id = undefined
+
+          @async ->
+            DESCRIBE = 'When the new item is modified (but save() is NOT called)'
+            @todo.text = 'four'
+            @todo.done = true
+            @todo.notes = 'four notes'
+
+            @async ->
+              expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is still true")
+                .to.equal true
+
+              storageValue = window.localStorage.getItem 'ioi-store'
+              expect(storageValue, "#{DESCRIBE} @todo is NOT written to localStorage")
+                .to.deep.equal JSON.stringify [
+                  {text: 'one',   notes: 'one notes', done: true}
+                  {text: 'two',   notes: 'two notes', done: false}
+                  {text: 'three', notes: 'three notes', done: true}
+                ]
+              done()
+

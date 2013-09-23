@@ -1,0 +1,36 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', done: true}
+      {text: 'two', done: false}
+      {text: 'three', done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-storage items="{{ todos }}"
+      
+    coffee:
+      Polymer 't-test',
+        # Retrieved todos will be written to @todos
+        todos: undefined
+
+        # Begin test when todo has been retrieved
+        todosChanged: ->
+          return unless @todos?.length and not @testStarted
+          @testStarted = true
+          @startTest()
+
+        startTest: ->
+          DESCRIBE = ''
+          expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
+            .to.deep.equal [
+              {text: 'one', done: true}
+              {text: 'two', done: false}
+              {text: 'three', done: true}
+            ]
+          done()

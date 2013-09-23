@@ -1,8 +1,18 @@
 / 
 / Resource
-/ -----------------
+/ --------
 / 
 link rel="import" href="polymer-xhr"
+
+polymer-element name="h-resource-item" attributes="item-id resource"
+  coffee:
+    Polymer "h-resource-item",
+      'item-id': undefined
+      resource: undefined
+
+      ready: ->
+      'item-idChanged': (itemId)->
+
 
 polymer-element name="h-resource--http" attributes="config"
   template
@@ -24,7 +34,7 @@ polymer-element name="h-resource--http" attributes="config"
         config.$ or= {}
 
       _getFnValue: (configValue, fnOptions)->
-        # If config value is a function, call it passing action options
+        # If config value is a function, call it passing action optionsself
         if (typeof configValue) is 'function'
           try configValue.call @config, fnOptions
         # ... otherwise, use the config value as is
@@ -40,26 +50,71 @@ polymer-element name="h-resource--http" attributes="config"
       _merge$Options: (action, actionOptions)->
         options = {}
         for configKey in ['url','method','headers','params','body']
-          options[configKey] = _getConfigValue action, 'url', actionOptions
+          options[configKey] = _getConfigValue action, configKey, actionOptions
         options
 
-      create: ->
-      get: defaultActionMethod 'get'
-      query: defaultActionMethod 'query'
+      get: (itemId, callback)->
+        config = createConfigFor 'get'
+        xhr.request config, itemId
+
+      create: (hash)->
+        xhr.request _merge$Options action, itemId
+        
+      update: ->
+      delete: ->
+      query: ->
+
 / 
 / Define a Resource
 / -----------------
 / 
 link rel="import" href="r-resource--http"
-polymer-element [ name="r-myresource"
+polymer-element [ name="r-todos"
                   extends="r-resource--http" ]
   coffee:
-    Polymer 'r-myresource',
+    Polymer 'r-todos',
       config:
         $:
-          url: 'http://localhost:9200/myresource'
+          url: '/todos/'
+        create: {}
+        update: {}
+        delete: {}
         get:
-          url: 'http://localhost:9200/myresource'
+          # An example of an action overriding default behavior.
+          # In this case, this function is used to determine `get()` request urls.
+          # This function builds off of what the parent says.
+          url: (id, options, parent)->
+            "#{parent id, options}/#{id}"
+        query:
+          url: (id, options, parent)->
+            "#{parent id, options}/"
+
+
+link rel="import" href="r-resource--http"
+polymer-element [ name="r-todos"
+                  extends="r-resource--http" ]
+  coffee:
+    Polymer 'r-todos',
+      url: '/todos/'
+      get: (id)->
+
+/ 
+/ Define a convenience Resource specific accessors
+/ ------------------------------------------------
+/ 
+polymer-element [ name="r-todo-item"
+                  extends="r-resource-item"
+                  resource="$.resource"
+                  noscript="" ]
+  template
+    r-todos#resource
+
+polymer-element [ name="r-todo-collection"
+                  extends="r-resource-item"
+                  resource="$.resource"
+                  noscript="" ]
+  template
+    r-todos#resource
 
 link rel="import" href="h-resource-collection"
 link rel="import" href="h-resource-item"
@@ -69,12 +124,18 @@ polymer-element name="v-app" noscript=""
   template
     / Instantiates a Resource (HTTP, LocalStorage, WebSocket, or whatever)
     r-todos#todos
-
-    r-todos-item [ resource="{{ $.todos }}"
-                   todo-id="{{ selectedTodoId }}" ]
-
-    r-todos-collection [ resource="{{ $.todos }}"
+    / Retrieves a resource item from the specified resource
+    r-resource-item [ resource="{{ $.todos }}"
+                      item-id="{{ selectedTodoId }}" ]
+    / Retrieves a collection of resource items from the specified resource
+    r-resource-collection [ resource="{{ $.todos }}"
                          query="{{ {done:doneFilter, text:textFilter} }}" ]
+
+
+    / Retrieves a resource item from a predetermined resource
+    r-todos-item item-id="{{ selectedTodoId }}"
+    / Retrieves a collection of resource items from a predetermined resource
+    r-todos-collection query="{{ {done:doneFilter, text:textFilter} }}"
 
     / 
     / Resource usage examples

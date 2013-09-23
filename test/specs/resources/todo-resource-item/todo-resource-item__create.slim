@@ -1,0 +1,100 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', done: true}
+      {text: 'two', done: false}
+      {text: 'three', done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      Polymer 't-test',
+        item_id: undefined
+
+        # Retrieved todo will be written to @todo
+        todo: undefined
+
+        # Begin test when todo has been retrieved
+        todoChanged: ->
+          return unless @todo
+          unless @testStarted
+            @testStarted = true
+            @startTest()
+
+        startTest: ->
+          DESCRIBE = 'When @item_id is undefined (new item),'
+          @item_id = undefined
+
+          @async ->
+            expect(@todo, "#{DESCRIBE} @todo is {}")
+              .to.deep.equal {}
+
+            expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is true")
+              .to.equal true
+
+              
+
+            DESCRIBE = 'After save() was called,'
+            @todo.text = 'four'
+            @todo.done = true
+            @$.todoItem.save()
+
+            @async ->
+              storageValue = window.localStorage.getItem 'ioi-store'
+              expect(storageValue, "#{DESCRIBE} @todo is written to localStorage")
+                .to.deep.equal JSON.stringify [
+                  {text: 'one', done: true}
+                  {text: 'two', done: false}
+                  {text: 'three', done: true}
+                  {text: 'four', done: true}
+                ]
+
+              expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is false")
+                .to.equal false
+
+              expect(@item_id, "#{DESCRIBE} @item_id is updated")
+                .to.equal 3
+
+
+              DESCRIBE = 'After save() was called again,'
+              @$.todoItem.save()
+
+              @async ->
+                storageValue = window.localStorage.getItem 'ioi-store'
+                expect(storageValue, "#{DESCRIBE} localStorage is as it was")
+                  .to.deep.equal JSON.stringify [
+                    {text: 'one', done: true}
+                    {text: 'two', done: false}
+                    {text: 'three', done: true}
+                    {text: 'four', done: true}
+                  ]
+
+                expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is still false")
+                  .to.equal false
+
+                expect(@item_id, "#{DESCRIBE} @item_id doesn't change")
+                  .to.equal 3
+
+                  
+                DESCRIBE = 'When item_id changes,'
+                @item_id = 1
+
+                @async ->
+                  expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is false")
+                    .to.equal false
+
+                  expect(@todo, "#{DESCRIBE} @item updated")
+                    .to.deep.equal text: 'two', done: false
+
+                  expect(@item_id, "#{DESCRIBE} @item_id is correct")
+                    .to.equal 1
+
+                  done()
+

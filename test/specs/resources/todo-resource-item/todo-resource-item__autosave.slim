@@ -1,0 +1,65 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', notes: 'one notes', done: true}
+      {text: 'two', notes: 'two notes', done: false}
+      {text: 'three', notes: 'three notes',done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      Polymer 't-test',
+        item_id: 1
+
+        # Retrieved todo will be written to @todo
+        todo: undefined
+
+        # Begin test when todo has been retrieved
+        todoChanged: ->
+          return unless @todo
+          unless @testStarted
+            @testStarted = true
+            @startTest()
+
+        startTest: ->
+          attrValueExpected = [
+            ['text','foo', [
+                {text: 'one', notes: 'one notes', done: true}
+                {text: 'foo', notes: 'two notes', done: false}
+                {text: 'three', notes: 'three notes',done: true}
+              ]
+            ]
+            ['notes','two notes modified', [
+              {text: 'one', notes: 'one notes', done: true}
+              {text: 'foo', notes: 'two notes modified', done: false}
+              {text: 'three', notes: 'three notes',done: true}
+            ]]
+            ['done',true, [
+              {text: 'one', notes: 'one notes', done: true}
+              {text: 'foo', notes: 'two notes modified', done: true}
+              {text: 'three', notes: 'three notes',done: true}
+            ]]
+          ]
+
+          testAttrChange = =>
+            unless attrValueExpected.length
+              done()
+            else
+              [attr, value, expected] = attrValueExpected.shift()
+              DESCRIBE = "When @todo.#{attr} changes,"
+              @todo[attr] = value
+
+              @async ->
+                expect(JSON.parse(window.localStorage.getItem('ioi-store')), "#{DESCRIBE} updates localStorage")
+                  .to.deep.equal expected
+
+                testAttrChange()
+
+          testAttrChange()

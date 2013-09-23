@@ -1,0 +1,60 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', done: true}
+      {text: 'two', done: false}
+      {text: 'three', done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      Polymer 't-test',
+        item_id: 1
+
+        # Retrieved todo will be written to @todo
+        todo: undefined
+
+        # Begin test when todo has been retrieved
+        todoChanged: ->
+          return unless @todo
+          unless @testStarted
+            @testStarted = true
+            @startTest()
+
+        startTest: ->
+          DESCRIBE = 'Given @item_id,'
+          expect(@todo, "#{DESCRIBE} retrieves and writes to @todo")
+            .to.deep.equal
+              text: 'two'
+              done: false
+
+          DESCRIBE = 'When @item_id changes,'
+          @item_id = 2
+
+          @async ->
+            expect(@todo, "#{DESCRIBE} retrieves and writes to @todo")
+              .to.deep.equal
+                text: 'three'
+                done: true
+
+            expect(@item_id, "#{DESCRIBE} when @item_id changes, @item_id stays the same")
+              .to.equal 2
+
+            DESCRIBE = 'Given @item_id is bogus,'
+            @item_id = 777
+
+            @async ->
+              expect(@todo, "#{DESCRIBE} writes `undefined` to @todo")
+                .to.equal undefined
+
+              expect(@item_id, "#{DESCRIBE} @item_id stays the same")
+                .to.equal 777
+
+              done()

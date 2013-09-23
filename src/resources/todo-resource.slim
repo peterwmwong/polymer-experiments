@@ -1,0 +1,112 @@
+/ Singleton storage to be shared by all <todo-resource-items> and
+/ <todo-resource-collections>
+polymer-element name='todo-resource-storage' attributes='items'
+  coffee:
+    items = JSON.parse window.localStorage.getItem('ioi-store') or '[]'
+    Polymer 'todo-resource-storage',
+      items: items
+      save: ->
+        window.localStorage.setItem 'ioi-store', JSON.stringify items
+        return
+
+polymer-element name='todo-resource-item' attributes='item_id item'
+  template
+    todo-resource-storage#storage items="{{ storedTodos }}"
+
+  coffee:
+    Polymer 'todo-resource-item',
+
+      # Input
+      item_id: undefined
+
+      # Output
+      item: undefined
+
+      storedTodos: undefined
+
+      enteredView: ->
+        @_itemObserver = new CompoundPathObserver (-> @save() unless @isNew), @
+        for attr in ['text','done','notes']
+          @_itemObserver.addPath @, Path.get("item.#{attr}") 
+        @_itemObserver.start()
+        @_updateItem()
+        return
+
+      leftView: ->
+        @_itemObserver.close()
+        return
+
+      item_idChanged: ->
+        @item_id = +@item_id if @item_id?
+        @_updateItem()
+        return
+
+      storedTodosChanged: ->
+        @_updateItem()
+        return
+
+      save: ->
+        if @isNew
+          if @item
+            @isNew = false
+            @item_id = @storedTodos.push(@item) - 1
+            @_saveToStorage()
+        else if @item and (@storedTodos[@item_id] is @item)
+          @_saveToStorage()
+        return
+
+      _saveToStorage: ->
+        @$.storage.save()
+        return
+
+      _updateItem: ->
+        # New item?
+        unless @item_id?
+          @item = {}
+          @isNew = true
+        else
+          @item = @storedTodos?[@item_id]
+        return
+
+
+polymer-element name='todo-resource-collection' attributes='query items'
+  template
+    todo-resource-storage#storage items="{{ storedTodos }}"
+
+  coffee:
+    Polymer 'todo-resource-collection',
+
+      # Input
+      query: {}
+
+      # Output
+      items: []
+
+      # Storage
+      storedTodos: undefined
+
+      enteredView: ->
+        @_queryObserver = new CompoundPathObserver @_updateItems, @
+        for attr in ['text','done','notes']
+          @_queryObserver.addPath @, Path.get("query.#{attr}") 
+        @_queryObserver.start()
+        return
+
+      leftView: ->
+        @_queryObserver.close()
+        return
+
+      storedTodosChanged: ->
+        @_updateItems()
+        return
+
+      _testItem: (item)->
+        {text,done,notes} = @query
+        (not text? or -1 < item.text.indexOf text) and
+          (not done? or item.done is done) and
+          (not notes? or -1 < item.text.indexOf notes)
+
+      _updateItems: ->
+        return unless @query? and @storedTodos?
+        @items = (item for item in @storedTodos when @_testItem item)
+        return
