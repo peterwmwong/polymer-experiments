@@ -1,0 +1,61 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', notes: 'a', done: true}
+      {text: 'one two', notes: 'a', done: false}
+      {text: 'one two three', notes: 'b', done: false}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-collection query="{{ query }}" items="{{ todos }}"
+      
+    coffee:
+      Polymer 't-test',
+        query:
+          text: 'MATCHNOTHIN'
+
+        # Retrieved todos will be written to @todos
+        todos: undefined
+
+        # Begin test when todo has been retrieved
+        todosChanged: ->
+          return unless @todos? and not @testStarted
+          @testStarted = true
+          @startTest()
+
+        startTest: ->
+          attrValueExpected = [
+            ['text', 'one', [
+              {text: 'one', notes: 'a', done: true}
+              {text: 'one two', notes: 'a', done: false}
+              {text: 'one two three', notes: 'b', done: false}
+            ]]
+            ['notes', 'a', [
+              {text: 'one', notes: 'a', done: true}
+              {text: 'one two', notes: 'a', done: false}
+            ]]
+            ['done', true, [
+              {text: 'one', notes: 'a', done: true}
+            ]]
+          ]
+
+          testAttrChange = =>
+            unless attrValueExpected.length
+              done()
+            else
+              [attr, value, expected] = attrValueExpected.shift()
+              DESCRIBE = "When @query.#{attr} changes,"
+              @query[attr] = value
+
+              @async ->
+                expect(@todos, "#{DESCRIBE} updates localStorage")
+                  .to.deep.equal expected
+
+                testAttrChange()
+
+          testAttrChange()

@@ -1,0 +1,52 @@
+== html_test 'resources/todo-resource.html'
+
+  / Setup
+  / -----
+  coffee:
+    window.localStorage.removeItem 'ioi-store'
+    window.localStorage.setItem 'ioi-store', JSON.stringify [
+      {text: 'one', done: true}
+      {text: 'two', done: false}
+      {text: 'three', done: true}
+    ]
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item="{{ todo }}"
+      todo-resource-collection#todoCollection items="{{ todos }}"
+      
+    coffee:
+      Polymer 't-test',
+        # Retrieved todo will be written to @todo
+        todo: undefined
+        todos: undefined
+
+        # Begin test when todo has been retrieved
+        todoChanged: ->
+          return unless @todo and @todos?.length
+          unless @testStarted
+            @testStarted = true
+            @startTest()
+
+        startTest: ->
+          DESCRIBE = 'When saving a new todo,'
+          expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
+            .to.deep.equal [
+              {text: 'one', done: true}
+              {text: 'two', done: false}
+              {text: 'three', done: true}
+            ]
+
+          @todo.text = 'four'
+          @todo.done = false
+          @$.todoItem.save()
+
+          @async ->
+            expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
+              .to.deep.equal [
+                {text: 'one', done: true}
+                {text: 'two', done: false}
+                {text: 'three', done: true}
+                {text: 'four', done: false}
+              ]
+            done()

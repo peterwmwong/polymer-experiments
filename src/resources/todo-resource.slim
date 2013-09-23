@@ -94,17 +94,21 @@ polymer-element name='todo-resource-collection' attributes='query items'
 
       leftView: ->
         @_queryObserver.close()
+        @_storedTodosObserver?.close()
         return
 
       storedTodosChanged: ->
+        if @storedTodos
+          @_storedTodosObserver?.close()
+          @_storedTodosObserver = new ArrayObserver @storedTodos, @_updateItems, @
         @_updateItems()
         return
 
       _testItem: (item)->
         {text,done,notes} = @query
         (not text? or -1 < item.text.indexOf text) and
-          (not done? or item.done is done) and
-          (not notes? or -1 < item.text.indexOf notes)
+          (not notes? or -1 < item.notes.indexOf notes) and
+          (not done? or item.done is done)
 
       _updateItems: ->
         return unless @query? and @storedTodos?

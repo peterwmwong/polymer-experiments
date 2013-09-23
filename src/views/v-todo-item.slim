@@ -53,9 +53,7 @@ polymer-element name="v-todo-item"
 
         # If no options, create a new todo
         {@todo_id, @element_to_expand_from} = options or {}
-            
         @$.editTodoText.blur()
-
         @.style.zIndex = 999
 
         # Animation before start
