@@ -4,11 +4,10 @@
   / -----
   coffee:
     window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify [
-      {text: 'one', done: true}
-      {text: 'two', done: false}
-      {text: 'three', done: true}
-    ]
+    window.localStorage.setItem 'ioi-store', JSON.stringify
+      'a': {text: 'one', done: true}
+      'b': {text: 'two', done: false}
+      'c': {text: 'three', done: true}
 
   polymer-element name="t-test"
     template
@@ -30,10 +29,11 @@
 
         startTest: ->
           DESCRIBE = 'Given @query,'
+          debugger
           expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
             .to.deep.equal [
-              {text: 'two', done: false}
-              {text: 'three', done: true}
+              {id: 'b', text: 'two', done: false}
+              {id: 'c', text: 'three', done: true}
             ]
 
           DESCRIBE = 'When @query changes,'
@@ -41,7 +41,7 @@
 
           @async ->
             expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
-              .to.deep.equal [ {text: 'one', done: true} ]
+              .to.deep.equal [ {id: 'a', text: 'one', done: true} ]
 
             DESCRIBE = "Given a @query that doesn't match any items,"
             @query.text = 'z'

@@ -34,7 +34,13 @@
 
               @async ->
                 storageValue = window.localStorage.getItem 'ioi-store'
-                expect(JSON.parse(storageValue), 'it is written to storage')
-                  .to.deep.equal [ text: 'foo', done: true ]
+                storedObj = JSON.parse storageValue
+                
+                expect(Object.keys(storedObj).length).to.equal 1
+                expect(storedObj[Object.keys(storedObj)[0]], 'it is written to storage')
+                  .to.deep.equal
+                    id: Object.keys(storedObj)[0]
+                    text: 'foo'
+                    done: true
 
                 done()

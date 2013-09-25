@@ -1,11 +1,21 @@
+script src="../../bower_components/node-uuid/uuid.js"
+
 / Singleton storage to be shared by all <todo-resource-items> and
 / <todo-resource-collections>
 polymer-element name='todo-resource-storage' attributes='items'
   coffee:
-    items = JSON.parse window.localStorage.getItem('ioi-store') or '[]'
+    items = JSON.parse window.localStorage.getItem('ioi-store') or '{}'
+    for id, item of items
+      # Make id read-only
+      Object.defineProperty item, 'id',
+        enumerable: true
+        writable: false
+        value: id
+
     Polymer 'todo-resource-storage',
       items: items
       save: ->
+        #TODO: Make id read-only
         window.localStorage.setItem 'ioi-store', JSON.stringify items
         return
 
@@ -37,7 +47,6 @@ polymer-element name='todo-resource-item' attributes='item_id item'
         return
 
       item_idChanged: ->
-        @item_id = +@item_id if @item_id?
         @_updateItem()
         return
 
@@ -49,7 +58,16 @@ polymer-element name='todo-resource-item' attributes='item_id item'
         if @isNew
           if @item
             @isNew = false
-            @item_id = @storedTodos.push(@item) - 1
+
+            @item_id = uuid()
+            # Make id read-only
+            Object.defineProperty @item, 'id',
+              enumerable: true
+              writable: false
+              value: @item_id
+
+            # TODO: Add test and re-generate an id loop with cutoff
+            @storedTodos[@item_id] = @item
             @_saveToStorage()
         else if @item and (@storedTodos[@item_id] is @item)
           @_saveToStorage()
@@ -65,7 +83,9 @@ polymer-element name='todo-resource-item' attributes='item_id item'
           @item = {}
           @isNew = true
         else
-          @item = @storedTodos?[@item_id]
+          @item = undefined
+          @isNew = false
+          @item = @storedTodos[@item_id]
         return
 
 
@@ -100,7 +120,7 @@ polymer-element name='todo-resource-collection' attributes='query items'
       storedTodosChanged: ->
         if @storedTodos
           @_storedTodosObserver?.close()
-          @_storedTodosObserver = new ArrayObserver @storedTodos, @_updateItems, @
+          @_storedTodosObserver = new ObjectObserver @storedTodos, @_updateItems, @
         @_updateItems()
         return
 
@@ -112,5 +132,5 @@ polymer-element name='todo-resource-collection' attributes='query items'
 
       _updateItems: ->
         return unless @query? and @storedTodos?
-        @items = (item for item in @storedTodos when @_testItem item)
+        @items = (item for id,item of @storedTodos when @_testItem item)
         return

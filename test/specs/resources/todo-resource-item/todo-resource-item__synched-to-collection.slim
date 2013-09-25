@@ -4,20 +4,20 @@
   / -----
   coffee:
     window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify [
-      {text: 'one', done: true}
-      {text: 'two', done: false}
-      {text: 'three', done: true}
-    ]
+    window.localStorage.setItem 'ioi-store', JSON.stringify
+      'a': {id: 'a', text: 'one', done: true}
+      'b': {id: 'b', text: 'two', done: false}
+      'c': {id: 'c', text: 'three', done: true}
 
   polymer-element name="t-test"
     template
-      todo-resource-item#todoItem item="{{ todo }}"
+      todo-resource-item#todoItem item="{{ todo }}" item_id="{{ todo_id }}"
       todo-resource-collection#todoCollection items="{{ todos }}"
       
     coffee:
       Polymer 't-test',
         # Retrieved todo will be written to @todo
+        todo_id: undefined
         todo: undefined
         todos: undefined
 
@@ -32,9 +32,9 @@
           DESCRIBE = 'When saving a new todo,'
           expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
             .to.deep.equal [
-              {text: 'one', done: true}
-              {text: 'two', done: false}
-              {text: 'three', done: true}
+              {id: 'a', text: 'one', done: true}
+              {id: 'b', text: 'two', done: false}
+              {id: 'c', text: 'three', done: true}
             ]
 
           @todo.text = 'four'
@@ -44,9 +44,10 @@
           @async ->
             expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
               .to.deep.equal [
-                {text: 'one', done: true}
-                {text: 'two', done: false}
-                {text: 'three', done: true}
-                {text: 'four', done: false}
+                {id: 'a', text: 'one', done: true}
+                {id: 'b', text: 'two', done: false}
+                {id: 'c', text: 'three', done: true}
+                {text: 'four', done: false, id: @todo_id}
               ]
+
             done()

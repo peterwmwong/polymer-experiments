@@ -4,11 +4,10 @@
   / -----
   coffee:
     window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify [
-      {text: 'one', notes: 'one notes', done: true}
-      {text: 'two', notes: 'two notes', done: false}
-      {text: 'three', notes: 'three notes',done: true}
-    ]
+    window.localStorage.setItem 'ioi-store', JSON.stringify
+      'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
+      'b': {id: 'b', text: 'two',   notes: 'two notes',   done: false}
+      'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
 
   polymer-element name="t-test"
     template
@@ -16,7 +15,7 @@
       
     coffee:
       Polymer 't-test',
-        item_id: 1
+        item_id: 'b'
 
         # Retrieved todo will be written to @todo
         todo: undefined
@@ -30,22 +29,21 @@
 
         startTest: ->
           attrValueExpected = [
-            ['text','foo', [
-                {text: 'one', notes: 'one notes', done: true}
-                {text: 'foo', notes: 'two notes', done: false}
-                {text: 'three', notes: 'three notes',done: true}
-              ]
+            ['text','foo',
+                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
+                'b': {id: 'b', text: 'foo',   notes: 'two notes',   done: false}
+                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
             ]
-            ['notes','two notes modified', [
-              {text: 'one', notes: 'one notes', done: true}
-              {text: 'foo', notes: 'two notes modified', done: false}
-              {text: 'three', notes: 'three notes',done: true}
-            ]]
-            ['done',true, [
-              {text: 'one', notes: 'one notes', done: true}
-              {text: 'foo', notes: 'two notes modified', done: true}
-              {text: 'three', notes: 'three notes',done: true}
-            ]]
+            ['notes','two notes modified',
+                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
+                'b': {id: 'b', text: 'foo',   notes: 'two notes modified',   done: false}
+                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
+            ]
+            ['done',true,
+                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
+                'b': {id: 'b', text: 'foo',   notes: 'two notes modified',   done: true}
+                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
+            ]
           ]
 
           testAttrChange = =>
@@ -55,8 +53,11 @@
               [attr, value, expected] = attrValueExpected.shift()
               DESCRIBE = "When @todo.#{attr} changes,"
               @todo[attr] = value
+              console.log 'setting', attr,  ' -to-> ', value
 
               @async ->
+                console.log JSON.stringify JSON.parse(window.localStorage.getItem('ioi-store')), undefined, 2
+                console.log JSON.stringify expected, undefined, 2
                 expect(JSON.parse(window.localStorage.getItem('ioi-store')), "#{DESCRIBE} updates localStorage")
                   .to.deep.equal expected
 

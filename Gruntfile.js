@@ -222,7 +222,7 @@ module.exports = function(grunt) {
       // Production Build Task
       // =====================
       vulcan: {
-        command: 'node vendor/labs/vulcanize/vulcan.js -i buid/index.html -o build/build.html -v',
+        command: 'node vendor/labs/vulcanize/vulcan.js -i build/index.html -o build/build.html -v',
         stdout: true,
         stderr: true
       }

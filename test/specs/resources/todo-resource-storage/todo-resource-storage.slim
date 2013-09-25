@@ -4,11 +4,10 @@
   / -----
   coffee:
     window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify [
-      {text: 'one', done: true}
-      {text: 'two', done: false}
-      {text: 'three', done: true}
-    ]
+    window.localStorage.setItem 'ioi-store', JSON.stringify
+      'a': {id: 'a', text: 'one', done: true}
+      'b': {id: 'b', text: 'two', done: false}
+      'c': {id: 'c', text: 'three', done: true}
 
   polymer-element name="t-test"
     template
@@ -21,16 +20,16 @@
 
         # Begin test when todo has been retrieved
         todosChanged: ->
-          return unless @todos?.length and not @testStarted
+          return unless @todos? and not @testStarted
           @testStarted = true
           @startTest()
 
         startTest: ->
           DESCRIBE = ''
+          debugger
           expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
-            .to.deep.equal [
-              {text: 'one', done: true}
-              {text: 'two', done: false}
-              {text: 'three', done: true}
-            ]
+            .to.deep.equal
+              'a': {id: 'a', text: 'one', done: true}
+              'b': {id: 'b', text: 'two', done: false}
+              'c': {id: 'c', text: 'three', done: true}
           done()
