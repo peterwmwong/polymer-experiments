@@ -39,15 +39,15 @@ polymer-element name='todo-resource-item' attributes='item_id item'
       storedTodos: undefined
 
       enteredView: ->
-        @_itemObserver = new CompoundPathObserver (-> @save() unless @isNew), @
+        @_itemSpy = new CompoundPathObserver (-> @save() unless @isNew), @
         for attr in ['text','done','notes']
-          @_itemObserver.addPath @, Path.get("item.#{attr}") 
-        @_itemObserver.start()
+          @_itemSpy.addPath @, Path.get("item.#{attr}") 
+        @_itemSpy.start()
         @_updateItem()
         return
 
       leftView: ->
-        @_itemObserver.close()
+        @_itemSpy.close()
         return
 
       item_idChanged: ->
@@ -105,21 +105,21 @@ polymer-element name='todo-resource-collection' attributes='query items'
       storedTodos: undefined
 
       enteredView: ->
-        @_queryObserver = new CompoundPathObserver @_updateItems, @
+        @_querySpy = new CompoundPathObserver @_updateItems, @
         for attr in ['text','done','notes']
-          @_queryObserver.addPath @, Path.get("query.#{attr}") 
-        @_queryObserver.start()
+          @_querySpy.addPath @, Path.get("query.#{attr}") 
+        @_querySpy.start()
         return
 
       leftView: ->
-        @_queryObserver.close()
-        @_storedTodosObserver?.close()
+        @_querySpy.close()
+        @_storedTodosSpy?.close()
         return
 
       storedTodosChanged: ->
         if @storedTodos
-          @_storedTodosObserver?.close()
-          @_storedTodosObserver = new ObjectObserver @storedTodos, @_updateItems, @
+          @_storedTodosSpy?.close()
+          @_storedTodosSpy = new ObjectObserver @storedTodos, @_updateItems, @
         @_updateItems()
         return
 
