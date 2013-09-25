@@ -5,15 +5,18 @@ script src="../../bower_components/node-uuid/uuid.js"
 polymer-element name='todo-resource-storage' attributes='items'
   coffee:
     items = JSON.parse window.localStorage.getItem('ioi-store') or '{}'
-    for id, item of items
+    defineId = (item, id)->
       # Make id read-only
       Object.defineProperty item, 'id',
         enumerable: true
         writable: false
         value: id
 
+    defineId item, id for id,item of items
+
     Polymer 'todo-resource-storage',
       items: items
+      defineId: defineId
       save: ->
         #TODO: Make id read-only
         window.localStorage.setItem 'ioi-store', JSON.stringify items
@@ -58,13 +61,8 @@ polymer-element name='todo-resource-item' attributes='item_id item'
         if @isNew
           if @item
             @isNew = false
-
             @item_id = uuid()
-            # Make id read-only
-            Object.defineProperty @item, 'id',
-              enumerable: true
-              writable: false
-              value: @item_id
+            @$.storage.defineId @item, @item_id
 
             # TODO: Add test and re-generate an id loop with cutoff
             @storedTodos[@item_id] = @item
