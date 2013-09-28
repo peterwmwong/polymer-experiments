@@ -9,7 +9,8 @@ do->
       id: "#{nextId}"
       text: "#{nextId} text"
       notes: "#{nextId} notes"
-      lastUpdated: Date.now()
+      # For consistency's sake use a different timestamp for each Todo
+      lastUpdated: Date.now() - 100000 + nextId
       done: false
 
     for attr, def of defs

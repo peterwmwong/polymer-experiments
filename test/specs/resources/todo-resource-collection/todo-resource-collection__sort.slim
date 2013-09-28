@@ -23,7 +23,6 @@
 
         # Test
         # ----
-        # Start test when todos are loaded
         todosChanged: ->
           return if not @todos?.length or @testStarted
           @testStarted = true
@@ -40,5 +39,5 @@
               note2
               note1
             ]
-            
+
             done()

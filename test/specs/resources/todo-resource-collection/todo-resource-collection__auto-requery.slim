@@ -1,61 +1,53 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {text: 'one', notes: 'a', done: true}
-      'b': {text: 'one two', notes: 'a', done: false}
-      'c': {text: 'one two three', notes: 'b', done: false}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
       todo-resource-collection query="{{ query }}" items="{{ todos }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote text: 'one', notes: 'a', done: true
+      note2 = @MockNote text: 'one two', notes: 'a', done: false
+      note3 = @MockNote text: 'one two three', notes: 'b', done: false
+      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+
       Polymer 't-test',
         query:
           text: 'MATCHNOTHIN'
 
-        # Retrieved todos will be written to @todos
         todos: undefined
 
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todosChanged: ->
-          return unless @todos? and not @testStarted
+          return if not @todos or @testStarted
           @testStarted = true
-          @startTest()
 
-        startTest: ->
-          attrValueExpected = [
-            ['text', 'one', [
-              {id: 'a', text: 'one', notes: 'a', done: true}
-              {id: 'b', text: 'one two', notes: 'a', done: false}
-              {id: 'c', text: 'one two three', notes: 'b', done: false}
-            ]]
-            ['notes', 'a', [
-              {id: 'a', text: 'one', notes: 'a', done: true}
-              {id: 'b', text: 'one two', notes: 'a', done: false}
-            ]]
-            ['done', true, [
-              {id: 'a', text: 'one', notes: 'a', done: true}
-            ]]
-          ]
+          @query.text = 'one'
+          @async ->
+            expect(@todos).to.deep.equal [
+              note3
+              note2
+              note1
+            ]
 
-          testAttrChange = =>
-            unless attrValueExpected.length
-              done()
-            else
-              [attr, value, expected] = attrValueExpected.shift()
-              DESCRIBE = "When @query.#{attr} changes,"
-              @query[attr] = value
+            @query.notes = 'a'
+            @async ->
+              expect(@todos).to.deep.equal [
+                note2
+                note1
+              ]
 
+              @query.done = false
               @async ->
-                debugger
-                expect(@todos, "#{DESCRIBE} updates localStorage")
-                  .to.deep.equal expected
+                expect(@todos).to.deep.equal [
+                  note2
+                ]
 
-                testAttrChange()
-
-          testAttrChange()
+                done()

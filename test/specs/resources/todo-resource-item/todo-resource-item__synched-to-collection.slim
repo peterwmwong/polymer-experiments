@@ -1,13 +1,8 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {id: 'a', text: 'one', done: true}
-      'b': {id: 'b', text: 'two', done: false}
-      'c': {id: 'c', text: 'three', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
@@ -15,39 +10,42 @@
       todo-resource-collection#todoCollection items="{{ todos }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote()
+      note2 = @MockNote()
+      note3 = @MockNote()
+      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+
       Polymer 't-test',
         # Retrieved todo will be written to @todo
         todo_id: undefined
         todo: undefined
         todos: undefined
 
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todoChanged: ->
-          return unless @todo and @todos?.length
-          unless @testStarted
-            @testStarted = true
-            @startTest()
+          return if not @todo or not @todos.length or @testStarted
+          @testStarted = true
 
-        startTest: ->
-          DESCRIBE = 'When saving a new todo,'
-          expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
-            .to.deep.equal [
-              {id: 'a', text: 'one', done: true}
-              {id: 'b', text: 'two', done: false}
-              {id: 'c', text: 'three', done: true}
-            ]
+          expect(@todos).to.deep.equal [
+            note3
+            note2
+            note1
+          ]
 
           @todo.text = 'four'
           @todo.done = false
           @$.todoItem.save()
 
           @async ->
-            expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
-              .to.deep.equal [
-                {id: 'a', text: 'one', done: true}
-                {id: 'b', text: 'two', done: false}
-                {id: 'c', text: 'three', done: true}
-                {text: 'four', done: false, id: @todo_id}
-              ]
+            expect(@todos).to.deep.equal [
+              @todo
+              note3
+              note2
+              note1
+            ]
 
             done()

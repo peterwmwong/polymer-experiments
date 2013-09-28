@@ -1,35 +1,29 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {id: 'a', text: 'one', done: true}
-      'b': {id: 'b', text: 'two', done: false}
-      'c': {id: 'c', text: 'three', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
       todo-resource-storage items="{{ todos }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote()
+      note2 = @MockNote()
+      note3 = @MockNote()
+      localStorage.setItem 'ioi-store', JSON.stringify AllMockNotes = @AllMockNotes
+
       Polymer 't-test',
-        # Retrieved todos will be written to @todos
-        todos: undefined
 
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todosChanged: ->
-          return unless @todos? and not @testStarted
+          return if not @todos or @testStarted
           @testStarted = true
-          @startTest()
 
-        startTest: ->
-          DESCRIBE = ''
-          debugger
-          expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
-            .to.deep.equal
-              'a': {id: 'a', text: 'one', done: true}
-              'b': {id: 'b', text: 'two', done: false}
-              'c': {id: 'c', text: 'three', done: true}
+          expect(@todos).to.deep.equal AllMockNotes
           done()

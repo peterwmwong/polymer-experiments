@@ -1,52 +1,45 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {text: 'one', done: true}
-      'b': {text: 'two', done: false}
-      'c': {text: 'three', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
       todo-resource-collection query="{{ query }}" items="{{ todos }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote text: 'one', done: true
+      note2 = @MockNote text: 'two', done: false
+      note3 = @MockNote text: 'three', done: false
+      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+
       Polymer 't-test',
         query:
           text: 't'
 
-        # Retrieved todos will be written to @todos
-        todos: undefined
-
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todosChanged: ->
-          return unless @todos?.length and not @testStarted
+          return if not @todos?.length or @testStarted
           @testStarted = true
-          @startTest()
 
-        startTest: ->
-          DESCRIBE = 'Given @query,'
-          expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
-            .to.deep.equal [
-              {id: 'b', text: 'two', done: false}
-              {id: 'c', text: 'three', done: true}
+          expect(@todos).to.deep.equal [
+            note3
+            note2
+          ]
+
+          @query.text = 'on'
+          @async ->
+            expect(@todos).to.deep.equal [
+              note1
             ]
 
-          DESCRIBE = 'When @query changes,'
-          @query.text = 'on'
-
-          @async ->
-            expect(@todos, "#{DESCRIBE} retrieves and writes to @todo")
-              .to.deep.equal [ {id: 'a', text: 'one', done: true} ]
-
-            DESCRIBE = "Given a @query that doesn't match any items,"
-            @query.text = 'z'
-
+            @query.text = 'BOGUS'
             @async ->
-              expect(@todos, "#{DESCRIBE} writes [] to @todos")
-                .to.deep.equal []
+              expect(@todos).to.deep.equal []
 
               done()
