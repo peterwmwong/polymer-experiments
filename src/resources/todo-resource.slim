@@ -5,19 +5,24 @@ script src="../../bower_components/node-uuid/uuid.js"
 polymer-element name='todo-resource-storage' attributes='items'
   coffee:
     items = JSON.parse window.localStorage.getItem('ioi-store') or '{}'
-    defineId = (item, id)->
-      # Make id read-only
-      Object.defineProperty item, 'id',
-        enumerable: true
-        writable: false
-        value: id
-      return
 
-    defineId item, id for id,item of items
+    # Make read-only properties
+    defineNote = (item)->
+      Object.defineProperties item,
+        id:
+          enumerable: true
+          writable: false
+          value: item.id
+        lastUpdated:
+          enumerable: true
+          writable: false
+          value: item.lastUpdated
+
+    defineNote item for id,item of items
 
     Polymer 'todo-resource-storage',
       items: items
-      defineId: defineId
+      defineNote: defineNote
       save: ->
         #TODO: Make id read-only
         window.localStorage.setItem 'ioi-store', JSON.stringify items
@@ -36,8 +41,10 @@ polymer-element name='todo-resource-item' attributes='item_id item'
       # Output
       item: undefined
 
+      # TODO: Do we need to declare storedTodos?
       storedTodos: undefined
 
+      # TODO: should we use created intead of enteredView?
       enteredView: ->
         @_itemSpy = new CompoundPathObserver (-> @save() unless @isNew), @
         for attr in ['text','done','notes']
@@ -46,24 +53,17 @@ polymer-element name='todo-resource-item' attributes='item_id item'
         @_updateItem()
         return
 
-      leftView: ->
-        @_itemSpy.close()
-        return
-
-      item_idChanged: ->
-        @_updateItem()
-        return
-
-      storedTodosChanged: ->
-        @_updateItem()
-        return
+      leftView:           -> @_itemSpy.close()
+      item_idChanged:     -> @_updateItem()
+      storedTodosChanged: -> @_updateItem()
 
       save: ->
         if @isNew
           if @item
             @isNew = false
-            @item_id = uuid()
-            @$.storage.defineId @item, @item_id
+            @item_id = @item.id = uuid()
+            @item.lastUpdated = Date.now()
+            @$.storage.defineNote @item
 
             # TODO: Add test and re-generate an id loop with cutoff
             @storedTodos[@item_id] = @item
@@ -102,8 +102,10 @@ polymer-element name='todo-resource-collection' attributes='query items'
       items: []
 
       # Storage
+      # TODO: Do we need to declare storedTodos?
       storedTodos: undefined
 
+      # TODO: should this be created instead of enteredView?
       enteredView: ->
         @_querySpy = new CompoundPathObserver @_updateItems, @
         for attr in ['text','done','notes']
@@ -132,4 +134,5 @@ polymer-element name='todo-resource-collection' attributes='query items'
       _updateItems: ->
         return unless @query? and @storedTodos?
         @items = (item for id,item of @storedTodos when @_testItem item)
+                    .sort (a,b)-> b.lastUpdated - a.lastUpdated
         return

@@ -1,63 +1,44 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-      'b': {id: 'b', text: 'two',   notes: 'two notes',   done: false}
-      'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
-      todo-resource-item item_id="{{ item_id }}" item="{{ todo }}"
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote()
+      note2 = @MockNote()
+      note3 = @MockNote()
+      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+
       Polymer 't-test',
-        item_id: 'b'
-
-        # Retrieved todo will be written to @todo
-        todo: undefined
-
-        # Begin test when todo has been retrieved
+        item_id: note2.id
+        
+        # Test
+        # ----
         todoChanged: ->
-          return unless @todo
-          unless @testStarted
-            @testStarted = true
-            @startTest()
+          return if not @todo or @testStarted
+          @testStarted = true
 
-        startTest: ->
-          DESCRIBE = 'Given @item_id,'
-          expect(@todo, "#{DESCRIBE} retrieves and writes to @todo")
-            .to.deep.equal
-              id: 'b'
-              text: 'two'
-              notes: 'two notes'
-              done: false
+          expect(@todo).to.deep.equal note2
+          expect(@$.todoItem.isNew).to.equal false
+          expect(@item_id).to.equal note2.id
 
-          DESCRIBE = 'When @item_id changes,'
-          @item_id = 'c'
-
+          @item_id = note3.id
           @async ->
-            expect(@todo, "#{DESCRIBE} retrieves and writes to @todo")
-              .to.deep.equal
-                id: 'c'
-                text: 'three'
-                notes: 'three notes'
-                done: true
+            expect(@todo).to.deep.equal note3
+            expect(@$.todoItem.isNew).to.equal false
+            expect(@item_id).to.equal note3.id
 
-            expect(@item_id, "#{DESCRIBE} when @item_id changes, @item_id stays the same")
-              .to.equal 'c'
-
-            DESCRIBE = 'Given @item_id is bogus,'
             @item_id = 'BOGUS'
-
             @async ->
-              expect(@todo, "#{DESCRIBE} writes `undefined` to @todo")
-                .to.equal undefined
-
-              expect(@item_id, "#{DESCRIBE} @item_id stays the same")
-                .to.equal 'BOGUS'
+              expect(@todo).to.equal undefined
+              expect(@item_id).to.equal 'BOGUS'
 
               done()

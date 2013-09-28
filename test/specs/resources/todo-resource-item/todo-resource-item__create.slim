@@ -1,108 +1,62 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-      'b': {id: 'b', text: 'two',   notes: 'two notes',   done: false}
-      'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
       todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote()
+      note2 = @MockNote()
+      note3 = @MockNote()
+      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+
       Polymer 't-test',
-        item_id: undefined
 
-        # Retrieved todo will be written to @todo
-        todo: undefined
-
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todoChanged: ->
-          return unless @todo
-          unless @testStarted
-            @testStarted = true
-            @startTest()
+          return if not @todo or @testStarted
+          @testStarted = true
 
-        startTest: ->
-          DESCRIBE = 'When @item_id is undefined (new item),'
           @item_id = undefined
-
           @async ->
-            expect(@todo, "#{DESCRIBE} @todo is {}")
-              .to.deep.equal {}
+            expect(@todo).to.deep.equal {}
+            expect(@$.todoItem.isNew).to.equal true
 
-            expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is true")
-              .to.equal true
-
-            DESCRIBE = 'After save() was called,'
             @todo.text = 'four'
             @todo.notes = 'four notes'
             @todo.done = true
             @$.todoItem.save()
 
             @async ->
-              storageValue = window.localStorage.getItem 'ioi-store'
-              new_item_id = @item_id
-              expected =
-                'a': {id: 'a', text: 'one',   notes: 'one notes', done: true}
-                'b': {id: 'b', text: 'two',   notes: 'two notes', done: false}
-                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
-              expected[new_item_id] =
-                text: 'four', notes: 'four notes', done: true, id: new_item_id
+              allNotes = {}
+              allNotes[ note1.id ] = note1
+              allNotes[ note2.id ] = note2
+              allNotes[ note3.id ] = note3
+              allNotes[ @item_id ] = @todo
 
-              console.log JSON.stringify JSON.parse(storageValue), undefined, 2
-              console.log JSON.stringify expected, undefined, 2
-              expect( JSON.parse(storageValue), "#{DESCRIBE} @todo is written to localStorage")
-                .to.deep.equal expected
+              expect(JSON.parse localStorage.getItem 'ioi-store').to.deep.equal allNotes
+              expect(@$.todoItem.isNew).to.equal false
+              expect(@item_id).to.be.a 'string'
 
-              expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is false")
-                .to.equal false
-
-              expect(@item_id, "#{DESCRIBE} @item_id is updated")
-                .to.be.a('string')
-
-              DESCRIBE = 'After save() was called again,'
+              newItemId = @item_id
               @$.todoItem.save()
-
               @async ->
-                storageValue = window.localStorage.getItem 'ioi-store'
-
-                expected =
-                  'a': {id: 'a', text: 'one',   notes: 'one notes', done: true}
-                  'b': {id: 'b', text: 'two',   notes: 'two notes', done: false}
-                  'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
-                expected[new_item_id] =
-                  {text: 'four', notes: 'four notes', done: true, id: new_item_id}
-
-                expect( JSON.parse(storageValue), "#{DESCRIBE} localStorage is as it was")
-                  .to.deep.equal expected
-
-                expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is still false")
-                  .to.equal false
-
-                expect(@item_id, "#{DESCRIBE} @item_id doesn't change")
-                  .to.equal new_item_id
+                expect(JSON.parse localStorage.getItem 'ioi-store').to.deep.equal allNotes
+                expect(@$.todoItem.isNew).to.equal false
+                expect(@item_id).to.equal newItemId
                   
-                DESCRIBE = 'When item_id changes,'
-                @item_id = 'b'
-
+                @item_id = note2.id
                 @async ->
-                  expect(@$.todoItem.isNew, "#{DESCRIBE} @isNew is false")
-                    .to.equal false
-
-                  expect(@todo, "#{DESCRIBE} @item updated")
-                    .to.deep.equal
-                      id: 'b'
-                      text: 'two'
-                      notes: 'two notes'
-                      done: false
-
-                  expect(@item_id, "#{DESCRIBE} @item_id is correct")
-                    .to.equal 'b'
-
+                  expect(@$.todoItem.isNew).to.equal false
+                  expect(@todo).to.deep.equal note2
+                  expect(@item_id).to.equal note2.id
+                  
                   done()
-

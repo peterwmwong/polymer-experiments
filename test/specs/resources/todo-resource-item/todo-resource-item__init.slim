@@ -1,46 +1,39 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
-      todo-resource-item#todo_item [ item_id="{{ item_id }}"
-                                     item="{{ todo }}" ]
-      
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      getStore = -> JSON.parse localStorage.getItem 'ioi-store'
+
       Polymer 't-test',
-        item_id: 1
+        item_id: 'BOGUS'
 
-        # Retrieved todo will be written to @todo
-        todo: undefined
-
+        # Test
+        # ----
         enteredView: ->
           @async ->
-            DESCRIBE = 'When localStorage is empty,'
-            expect(@todo, "#{DESCRIBE} @todo is set undefined")
-              .to.equal undefined
+            expect(@todo).to.equal undefined
             
-            DESCRIBE = 'When saving a new item,'
             @item_id = undefined
             @async ->
-              @todo =
-                text: 'foo'
-                done: true
-              debugger
-              @$.todo_item.save()
+              @todo.text = 'foo'
+              @todo.done = true
+              @$.todoItem.save()
 
               @async ->
-                storageValue = window.localStorage.getItem 'ioi-store'
-                storedObj = JSON.parse storageValue
-                
-                expect(Object.keys(storedObj).length).to.equal 1
-                expect(storedObj[Object.keys(storedObj)[0]], 'it is written to storage')
-                  .to.deep.equal
-                    id: Object.keys(storedObj)[0]
-                    text: 'foo'
-                    done: true
+                expect(Object.keys(getStore()).length).to.equal 1
+                expect(getStore()).to.deep.equal do=>
+                  allTodos = {}
+                  allTodos[@item_id] = @todo
+                  allTodos
 
                 done()

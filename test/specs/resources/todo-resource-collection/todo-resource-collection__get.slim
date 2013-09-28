@@ -29,7 +29,6 @@
 
         startTest: ->
           DESCRIBE = 'Given @query,'
-          debugger
           expect(@todos, "#{DESCRIBE} retrieves and writes to @todos")
             .to.deep.equal [
               {id: 'b', text: 'two', done: false}

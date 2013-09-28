@@ -1,66 +1,42 @@
 == html_test 'resources/todo-resource.html'
 
-  / Setup
-  / -----
-  coffee:
-    window.localStorage.removeItem 'ioi-store'
-    window.localStorage.setItem 'ioi-store', JSON.stringify
-      'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-      'b': {id: 'b', text: 'two',   notes: 'two notes',   done: false}
-      'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockNote.js'
 
   polymer-element name="t-test"
     template
       todo-resource-item item_id="{{ item_id }}" item="{{ todo }}"
       
     coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockNote()
+      note2 = @MockNote()
+      note3 = @MockNote()
+      localStorage.setItem 'ioi-store', JSON.stringify AllMockNotes = @AllMockNotes
+      getStore = -> JSON.parse localStorage.getItem 'ioi-store'
+
       Polymer 't-test',
-        item_id: 'b'
+        item_id: note2.id
 
-        # Retrieved todo will be written to @todo
-        todo: undefined
-
-        # Begin test when todo has been retrieved
+        # Test
+        # ----
         todoChanged: ->
-          return unless @todo
-          unless @testStarted
-            @testStarted = true
-            @startTest()
+          return if not @todo or @testStarted
+          @testStarted = true
 
-        startTest: ->
-          attrValueExpected = [
-            ['text','foo',
-                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-                'b': {id: 'b', text: 'foo',   notes: 'two notes',   done: false}
-                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
-            ]
-            ['notes','two notes modified',
-                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-                'b': {id: 'b', text: 'foo',   notes: 'two notes modified',   done: false}
-                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
-            ]
-            ['done',true,
-                'a': {id: 'a', text: 'one',   notes: 'one notes',   done: true}
-                'b': {id: 'b', text: 'foo',   notes: 'two notes modified',   done: true}
-                'c': {id: 'c', text: 'three', notes: 'three notes', done: true}
-            ]
-          ]
+          AllMockNotes[note2.id].text = @todo.text = 'foo'
+          @async ->
+            expect(getStore()).to.deep.equal AllMockNotes
 
-          testAttrChange = =>
-            unless attrValueExpected.length
-              done()
-            else
-              [attr, value, expected] = attrValueExpected.shift()
-              DESCRIBE = "When @todo.#{attr} changes,"
-              @todo[attr] = value
-              console.log 'setting', attr,  ' -to-> ', value
+            AllMockNotes[note2.id].notes = @todo.notes = 'foo notes'
+            @async ->
+              expect(getStore()).to.deep.equal AllMockNotes
 
+              AllMockNotes[note2.id].done = @todo.done = not @todo.done
               @async ->
-                console.log JSON.stringify JSON.parse(window.localStorage.getItem('ioi-store')), undefined, 2
-                console.log JSON.stringify expected, undefined, 2
-                expect(JSON.parse(window.localStorage.getItem('ioi-store')), "#{DESCRIBE} updates localStorage")
-                  .to.deep.equal expected
+                expect(getStore()).to.deep.equal AllMockNotes
 
-                testAttrChange()
-
-          testAttrChange()
+                done()
