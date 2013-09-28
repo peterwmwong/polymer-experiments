@@ -2,7 +2,7 @@
 
   / Mocks/Helpers
   / -------------
-  script src='../../../helpers/MockNote.js'
+  script src='../../../helpers/MockTodo.js'
 
   polymer-element name="t-test"
     template
@@ -12,10 +12,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockNote()
-      note2 = @MockNote()
-      note3 = @MockNote()
-      localStorage.setItem 'ioi-store', JSON.stringify AllMockNotes = @AllMockNotes
+      note1 = @MockTodo()
+      note2 = @MockTodo()
+      note3 = @MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify AllMockTodos = @MockTodo.all
       getStore = -> JSON.parse localStorage.getItem 'ioi-store'
 
       Polymer 't-test',
@@ -27,16 +27,16 @@
           return if not @todo or @testStarted
           @testStarted = true
 
-          AllMockNotes[note2.id].text = @todo.text = 'foo'
+          AllMockTodos[note2.id].text = @todo.text = 'foo'
           @async ->
-            expect(getStore()).to.deep.equal AllMockNotes
+            expect(getStore()).to.deep.equal AllMockTodos
 
-            AllMockNotes[note2.id].notes = @todo.notes = 'foo notes'
+            AllMockTodos[note2.id].notes = @todo.notes = 'foo notes'
             @async ->
-              expect(getStore()).to.deep.equal AllMockNotes
+              expect(getStore()).to.deep.equal AllMockTodos
 
-              AllMockNotes[note2.id].done = @todo.done = not @todo.done
+              AllMockTodos[note2.id].done = @todo.done = not @todo.done
               @async ->
-                expect(getStore()).to.deep.equal AllMockNotes
+                expect(getStore()).to.deep.equal AllMockTodos
 
                 done()

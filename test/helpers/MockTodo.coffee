@@ -1,8 +1,7 @@
 do->
   nextId = 0
-  @AllMockNotes = AllMockNotes = {}
 
-  @MockNote = (o={})->
+  @MockTodo = MockTodo = (o={})->
     ++nextId
     note = {}
     defs =
@@ -16,4 +15,6 @@ do->
     for attr, def of defs
       note[attr] = if o[attr]? then o[attr] else def
 
-    AllMockNotes[note.id] = note
+    MockTodo.all[note.id] = note
+
+  @MockTodo.all = {}

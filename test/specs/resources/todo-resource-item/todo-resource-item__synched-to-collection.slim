@@ -2,7 +2,7 @@
 
   / Mocks/Helpers
   / -------------
-  script src='../../../helpers/MockNote.js'
+  script src='../../../helpers/MockTodo.js'
 
   polymer-element name="t-test"
     template
@@ -13,10 +13,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockNote()
-      note2 = @MockNote()
-      note3 = @MockNote()
-      localStorage.setItem 'ioi-store', JSON.stringify @AllMockNotes
+      note1 = @MockTodo()
+      note2 = @MockTodo()
+      note3 = @MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
 
       Polymer 't-test',
         # Retrieved todo will be written to @todo
