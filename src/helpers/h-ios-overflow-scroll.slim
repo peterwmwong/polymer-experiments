@@ -10,9 +10,23 @@
 /        <h-ios-overflow-scroll />
 /      </div>
 polymer-element name="h-ios-overflow-scroll"
+  template
+    css:
+      @host {
+        * {
+          display: block;
+          position: absolute;
+          width: 1px;
+          top: 0px;
+          bottom: -2px;
+          opacity: 0;
+          z-index: -1;
+        }
+      }
+
   coffee:
     Polymer 'h-ios-overflow-scroll',
-      enteredDocument: ->
+      enteredView: ->
         el = @parentNode.host or @parentNode
         el.style.webkitOverflowScrolling = 'touch'
         el.addEventListener 'touchstart', (e)->
