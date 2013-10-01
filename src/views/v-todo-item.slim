@@ -90,7 +90,8 @@ polymer-element name="v-todo-item"
         @is_open = false
 
         createdTodo = @$.todoResourceItem.isNew and @todo.text
-        @$.todoResourceItem.save()
+        if !@$.todoResourceItem.isNew or createdTodo
+          @$.todoResourceItem.save()
 
         # Animation start
         @$.panelContainer.setAttribute 'style',
