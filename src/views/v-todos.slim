@@ -1,3 +1,4 @@
+link rel="import" href="v-banner.html"
 link rel="import" href="v-todo-item.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 link rel="import" href="../resources/todo-resource.html"
@@ -18,11 +19,7 @@ polymer-element name="v-todos" attributes="user_id list_id"
           | {{ todo.text }}
 
     / TODO: new polymer-element
-    .banner
-      button.btn-compose-newTodo on-tap="onNewTodo"
-      button.btn-settings
-      .title
-        | List Name
+    v-banner on-new-todo="onNewTodo"
 
     v-todo-item#todoDetails on-close="onCloseDetails"
 

@@ -1,6 +1,15 @@
 TODO
 ====
 
+- Delete Todo
+  - from list page (swipe)
+  - from todo detail page
+
+- List Managment
+  - create
+  - list / select
+  - delete
+
 - icons
   - new todo
   - done/not-done
