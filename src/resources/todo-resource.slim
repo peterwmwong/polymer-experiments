@@ -5,28 +5,62 @@ script src="../../bower_components/node-uuid/uuid.js"
 polymer-element name='todo-resource-storage' attributes='items'
   coffee:
     items = JSON.parse window.localStorage.getItem('ioi-store') or '{}'
+    saveTodos = ->
+      window.localStorage.setItem 'ioi-store', JSON.stringify items
 
-    # Make read-only properties
-    defineNote = (item)->
-      Object.defineProperties item,
-        id:
+    ResourceAccessors = (model, readOnlyAttrs={})->
+      Object.defineProperty @, 'model',
+        configurable: false
+        enumerable: false
+        value: model
+      for attr in ['id','lastUpdated'] when (val = readOnlyAttrs[attr])?
+        Object.defineProperty @, attr,
+          configurable: false
           enumerable: true
-          writable: false
-          value: item.id
-        lastUpdated:
-          enumerable: true
-          writable: false
-          value: item.lastUpdated
+          value: readOnlyAttrs[attr]
+      return
 
-    defineNote item for id,item of items
+    Object.defineProperties ResourceAccessors.prototype,
+      isNew:
+        configurable: false
+        enumerable: false
+        get: -> not @id?
+
+      delete: 
+        configurable: false
+        enumerable: false
+        value: ->
+          unless @isNew
+            delete items[@model.$.id]
+            saveTodos()
+          return
+
+      save:
+        configurable: false
+        enumerable: false
+        value: ->
+          if @isNew
+            @model.$ = new ResourceAccessors @model,
+              id: id = uuid()
+              lastUpdated: Date.now()
+
+            # TODO: Add test and re-generate an id loop with cutoff
+            items[id] = @model
+            saveTodos()
+          else
+            saveTodos()
+          return
+
+    for id,todo of items
+      todo.$ = new ResourceAccessors todo, todo.$
 
     Polymer 'todo-resource-storage',
       items: items
-      defineNote: defineNote
-      save: ->
-        #TODO: Make id read-only
-        window.localStorage.setItem 'ioi-store', JSON.stringify items
-        return
+      createTodo: ->
+        todo = {}
+        todo.$ = new ResourceAccessors todo, todo.$
+        todo
+
 
 polymer-element name='todo-resource-item' attributes='item_id item'
   template
@@ -41,50 +75,31 @@ polymer-element name='todo-resource-item' attributes='item_id item'
       # Output
       item: undefined
 
-      # TODO: Do we need to declare storedTodos?
-      storedTodos: undefined
-
       # TODO: should we use created intead of enteredView?
       enteredView: ->
-        @_itemSpy = new CompoundPathObserver (-> @save() unless @isNew), @
+        @_itemSpy = new CompoundPathObserver (-> @item?.$.save()), @
         for attr in ['text','done','notes']
-          @_itemSpy.addPath @, Path.get("item.#{attr}") 
+          @_itemSpy.addPath @, Path.get("item.#{attr}")
         @_itemSpy.start()
+
+        @_itemIdSpy = new PathObserver @, 'item.$.id',
+          ((newId)->@item_id = newId if @item)
+          @
         @_updateItem()
         return
 
-      leftView:           -> @_itemSpy.close()
+      leftView: ->
+        @_itemSpy.close()
+        @_itemIdSpy.close()
+        
       item_idChanged:     -> @_updateItem()
       storedTodosChanged: -> @_updateItem()
 
-      save: ->
-        if @isNew
-          if @item
-            @isNew = false
-            @item_id = @item.id = uuid()
-            @item.lastUpdated = Date.now()
-            @$.storage.defineNote @item
-
-            # TODO: Add test and re-generate an id loop with cutoff
-            @storedTodos[@item_id] = @item
-            @_saveToStorage()
-        else if @item and (@storedTodos[@item_id] is @item)
-          @_saveToStorage()
-        return
-
-      _saveToStorage: ->
-        @$.storage.save()
-        return
-
       _updateItem: ->
         # New item?
-        unless @item_id?
-          @item = {}
-          @isNew = true
-        else
-          @item = undefined
-          @isNew = false
-          @item = @storedTodos[@item_id]
+        @item =
+          if @item_id? then @storedTodos[@item_id]
+          else @$.storage.createTodo()
         return
 
 
@@ -100,10 +115,6 @@ polymer-element name='todo-resource-collection' attributes='query items'
 
       # Output
       items: []
-
-      # Storage
-      # TODO: Do we need to declare storedTodos?
-      storedTodos: undefined
 
       # TODO: should this be created instead of enteredView?
       enteredView: ->
@@ -134,5 +145,5 @@ polymer-element name='todo-resource-collection' attributes='query items'
       _updateItems: ->
         return unless @query? and @storedTodos?
         @items = (item for id,item of @storedTodos when @_testItem item)
-                    .sort (a,b)-> b.lastUpdated - a.lastUpdated
+                    .sort (a,b)-> b.$.lastUpdated - a.$.lastUpdated
         return

@@ -16,24 +16,25 @@
       note2 = MockTodo()
       note3 = MockTodo()
       localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
-      getStore = -> JSON.parse localStorage.getItem 'ioi-store'
 
       Polymer 't-test',
-        item_id: undefined
-        todo: undefined
+
+        item_id: note2.$.id
 
         # Test
         # ----
         todoChanged: ->
           return if not @todo or @testStarted
           @testStarted = true
-          
-          @todo.text = 'four'
-          @todo.done = true
-          @todo.notes = 'four notes'
+
+          expect(@todo).to.deep.equal note2
+
+          @todo.$.delete()
           @async ->
-            expect(@todo.$.isNew).to.equal true
-            expect(getStore()).to.deep.equal MockTodo.all
-
+            expect(JSON.parse localStorage.getItem 'ioi-store')
+              .to.deep.equal MockTodoMap [
+                note1
+                note3
+              ]
+                
             done()
-

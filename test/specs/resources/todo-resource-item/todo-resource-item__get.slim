@@ -18,7 +18,7 @@
       localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
 
       Polymer 't-test',
-        item_id: note2.id
+        item_id: note2.$.id
         
         # Test
         # ----
@@ -27,14 +27,14 @@
           @testStarted = true
 
           expect(@todo).to.deep.equal note2
-          expect(@$.todoItem.isNew).to.equal false
-          expect(@item_id).to.equal note2.id
+          expect(@todo.$.isNew).to.equal false
+          expect(@item_id).to.equal note2.$.id
 
-          @item_id = note3.id
+          @item_id = note3.$.id
           @async ->
             expect(@todo).to.deep.equal note3
-            expect(@$.todoItem.isNew).to.equal false
-            expect(@item_id).to.equal note3.id
+            expect(@todo.$.isNew).to.equal false
+            expect(@item_id).to.equal note3.$.id
 
             @item_id = 'BOGUS'
             @async ->

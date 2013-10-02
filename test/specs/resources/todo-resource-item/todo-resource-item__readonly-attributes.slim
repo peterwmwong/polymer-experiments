@@ -12,12 +12,12 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockTodo()
-      localStorage.setItem 'ioi-store', JSON.stringify AllMockTodos = @MockTodo.all
+      note1 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
       getStore = -> JSON.parse localStorage.getItem 'ioi-store'
 
       Polymer 't-test',
-        item_id: note1.id
+        item_id: note1.$.id
 
         # Test
         # ----
@@ -26,25 +26,25 @@
           @testStarted = true
 
           expect(@todo).to.deep.equal note1
-          expect(@$.todoItem.isNew).to.equal false
+          expect(@todo.$.isNew).to.equal false
 
           for attr in ['id','lastUpdated']
-            origValue = @todo[attr]
-            @todo[attr] = 'SHOULDNOTLAST'
-            expect(@todo[attr]).to.equal origValue
+            origValue = @todo.$[attr]
+            @todo.$[attr] = 'SHOULDNOTLAST'
+            expect(@todo.$[attr]).to.equal origValue
 
           @item_id = undefined
           @async ->
             @todo.text = 'three'
             @todo.notes = 'three notes'
             @todo.done = true
-            @$.todoItem.save()
+            @todo.$.save()
 
             @async ->
-              expect(@todo.id).to.be.a 'string'
-              originalId = @todo.id
-              @todo.id = 'SHOULDNOTLAST'
-              expect(@todo.id).to.equal originalId
+              expect(@todo.$.id).to.be.a 'string'
+              originalId = @todo.$.id
+              @todo.$.id = 'SHOULDNOTLAST'
+              expect(@todo.$.id).to.equal originalId
 
               done()
 

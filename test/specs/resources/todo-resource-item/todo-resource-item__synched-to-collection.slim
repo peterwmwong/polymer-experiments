@@ -13,10 +13,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockTodo()
-      note2 = @MockTodo()
-      note3 = @MockTodo()
-      localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
+      note1 = MockTodo()
+      note2 = MockTodo()
+      note3 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
 
       Polymer 't-test',
         # Retrieved todo will be written to @todo
@@ -38,8 +38,7 @@
 
           @todo.text = 'four'
           @todo.done = false
-          @$.todoItem.save()
-
+          @todo.$.save()
           @async ->
             expect(@todos).to.deep.equal [
               @todo
@@ -48,4 +47,12 @@
               note1
             ]
 
-            done()
+            @todo.$.delete()
+            @async ->
+              expect(@todos).to.deep.equal [
+                note3
+                note2
+                note1
+              ]
+
+              done()

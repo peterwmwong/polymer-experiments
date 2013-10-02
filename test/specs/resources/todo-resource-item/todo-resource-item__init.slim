@@ -27,13 +27,9 @@
             @async ->
               @todo.text = 'foo'
               @todo.done = true
-              @$.todoItem.save()
+              @todo.$.save()
 
               @async ->
                 expect(Object.keys(getStore()).length).to.equal 1
-                expect(getStore()).to.deep.equal do=>
-                  allTodos = {}
-                  allTodos[@item_id] = @todo
-                  allTodos
-
+                expect(getStore()).to.deep.equal MockTodoMap [@todo]
                 done()

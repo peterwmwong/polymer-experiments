@@ -7,7 +7,7 @@ polymer-element name="v-todo-item"
   template
     link rel="stylesheet" href="v-todo-item.css"
 
-    todo-resource-item#todoResourceItem item_id="{{ todo_id }}" item="{{ todo }}"
+    todo-resource-item item_id="{{ todo_id }}" item="{{ todo }}"
 
     #btnBack on-tap="onClose" touch-action="none"
       | &lt;
@@ -89,9 +89,7 @@ polymer-element name="v-todo-item"
         return unless @is_open
         @is_open = false
 
-        createdTodo = @$.todoResourceItem.isNew and @todo.text
-        if !@$.todoResourceItem.isNew or createdTodo
-          @$.todoResourceItem.save()
+        @todo.$.save() if not @todo.$.isNew or @todo.text
 
         # Animation start
         @$.panelContainer.setAttribute 'style',
@@ -111,5 +109,4 @@ polymer-element name="v-todo-item"
           @$.wrap.classList.remove 'bgout'
           @$.wrap.style.backgroundColor = ''
           @.style.zIndex = ''
-          @fire 'close', createdTodo
         ), ANIMATION_DURATION_MS

@@ -12,10 +12,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockTodo()
-      note2 = @MockTodo()
-      note3 = @MockTodo()
-      localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
+      note1 = MockTodo()
+      note2 = MockTodo()
+      note3 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
 
       Polymer 't-test',
 
@@ -27,36 +27,42 @@
 
           @item_id = undefined
           @async ->
-            expect(@todo).to.deep.equal {}
-            expect(@$.todoItem.isNew).to.equal true
+            expect(@todo).to.deep.equal $:{}
+            expect(@todo.$.isNew).to.equal true
 
             @todo.text = 'four'
             @todo.notes = 'four notes'
             @todo.done = true
-            @$.todoItem.save()
+            @todo.$.save()
 
             @async ->
-              allNotes = {}
-              allNotes[ note1.id ] = note1
-              allNotes[ note2.id ] = note2
-              allNotes[ note3.id ] = note3
-              allNotes[ @item_id ] = @todo
-
-              expect(JSON.parse localStorage.getItem 'ioi-store').to.deep.equal allNotes
-              expect(@$.todoItem.isNew).to.equal false
+              expect(JSON.parse localStorage.getItem 'ioi-store')
+                .to.deep.equal MockTodoMap [
+                  note1
+                  note2
+                  note3
+                  @todo
+                ]
+              expect(@todo.$.isNew).to.equal false
               expect(@item_id).to.be.a 'string'
 
               newItemId = @item_id
-              @$.todoItem.save()
+              @todo.$.save()
               @async ->
-                expect(JSON.parse localStorage.getItem 'ioi-store').to.deep.equal allNotes
-                expect(@$.todoItem.isNew).to.equal false
+                expect(JSON.parse localStorage.getItem 'ioi-store')
+                  .to.deep.equal MockTodoMap [
+                    note1
+                    note2
+                    note3
+                    @todo
+                  ]
+                expect(@todo.$.isNew).to.equal false
                 expect(@item_id).to.equal newItemId
                   
-                @item_id = note2.id
+                @item_id = note2.$.id
                 @async ->
-                  expect(@$.todoItem.isNew).to.equal false
+                  expect(@todo.$.isNew).to.equal false
                   expect(@todo).to.deep.equal note2
-                  expect(@item_id).to.equal note2.id
+                  expect(@item_id).to.equal note2.$.id
                   
                   done()

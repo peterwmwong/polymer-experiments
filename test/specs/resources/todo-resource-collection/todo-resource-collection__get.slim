@@ -12,10 +12,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockTodo text: 'one', done: true
-      note2 = @MockTodo text: 'two', done: false
-      note3 = @MockTodo text: 'three', done: false
-      localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
+      note1 = MockTodo text: 'one', done: true
+      note2 = MockTodo text: 'two', done: false
+      note3 = MockTodo text: 'three', done: false
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
 
       Polymer 't-test',
         query:

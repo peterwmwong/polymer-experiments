@@ -12,10 +12,10 @@
       # Setup
       # -----
       localStorage.removeItem 'ioi-store'
-      note1 = @MockTodo()
-      note2 = @MockTodo()
-      note3 = @MockTodo()
-      localStorage.setItem 'ioi-store', JSON.stringify AllMockTodos = @MockTodo.all
+      note1 = MockTodo()
+      note2 = MockTodo()
+      note3 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
 
       Polymer 't-test',
 
@@ -25,5 +25,5 @@
           return if not @todos or @testStarted
           @testStarted = true
 
-          expect(@todos).to.deep.equal AllMockTodos
+          expect(@todos).to.deep.equal MockTodo.all
           done()

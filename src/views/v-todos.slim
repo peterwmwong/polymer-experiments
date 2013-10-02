@@ -2,6 +2,7 @@ link rel="import" href="v-banner.html"
 link rel="import" href="v-todo-item.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 link rel="import" href="../resources/todo-resource.html"
+link rel="import" href="../../vendor/polymer-all/polymer-ui-elements/polymer-ui-card/polymer-ui-card.html"
   
 polymer-element name="v-todos" attributes="user_id list_id"
 
@@ -14,14 +15,15 @@ polymer-element name="v-todos" attributes="user_id list_id"
     #todos
       h-ios-overflow-scroll
 
-      template repeat="{{ todo in listTodos }}"
-        a.todo on-tap="onOpenDetails" touch-action="pan-y"
-          | {{ todo.text }}
+      template repeat="{{ listTodos }}"
+        polymer-ui-card.todo [ swipeable=""
+                               on-polymer-card-swipe-away="onDeleteTodo"
+                               on-tap="onOpenDetails" ]
+          | {{ text }}
 
-    / TODO: new polymer-element
     v-banner on-new-todo="onNewTodo"
 
-    v-todo-item#todoDetails on-close="onCloseDetails"
+    v-todo-item#todoDetails
 
   coffee:
     Polymer "v-todos",
@@ -32,6 +34,9 @@ polymer-element name="v-todos" attributes="user_id list_id"
       onNewTodo: ->
         @$.todoDetails.open()
 
+      onDeleteTodo: (event)->
+        event.target.templateInstance.model.$.delete()
+
       ###
       "Opens" a todo for a user...
       1) to allow editing
@@ -39,9 +44,5 @@ polymer-element name="v-todos" attributes="user_id list_id"
       ###
       onOpenDetails: ({target})->
         @$.todoDetails.open
-          todo_id: target.templateInstance.model.todo.id
+          todo_id: target.templateInstance.model.todo.$.id
           element_to_expand_from: target
-
-      onCloseDetails: (ev, createdTodo)->
-        # Scroll to the newly created todo
-        @$.todos.impl.scrollTop = 0 if createdTodo
