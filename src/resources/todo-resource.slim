@@ -1,0 +1,149 @@
+script src="../../bower_components/node-uuid/uuid.js"
+
+/ Singleton storage to be shared by all <todo-resource-items> and
+/ <todo-resource-collections>
+polymer-element name='todo-resource-storage' attributes='items'
+  coffee:
+    items = JSON.parse window.localStorage.getItem('ioi-store') or '{}'
+    saveTodos = ->
+      window.localStorage.setItem 'ioi-store', JSON.stringify items
+
+    ResourceAccessors = (model, readOnlyAttrs={})->
+      Object.defineProperty @, 'model',
+        configurable: false
+        enumerable: false
+        value: model
+      for attr in ['id','lastUpdated'] when (val = readOnlyAttrs[attr])?
+        Object.defineProperty @, attr,
+          configurable: false
+          enumerable: true
+          value: readOnlyAttrs[attr]
+      return
+
+    Object.defineProperties ResourceAccessors.prototype,
+      isNew:
+        configurable: false
+        enumerable: false
+        get: -> not @id?
+
+      delete: 
+        configurable: false
+        enumerable: false
+        value: ->
+          unless @isNew
+            delete items[@model.$.id]
+            saveTodos()
+          return
+
+      save:
+        configurable: false
+        enumerable: false
+        value: ->
+          if @isNew
+            @model.$ = new ResourceAccessors @model,
+              id: id = uuid()
+              lastUpdated: Date.now()
+
+            # TODO: Add test and re-generate an id loop with cutoff
+            items[id] = @model
+            saveTodos()
+          else
+            saveTodos()
+          return
+
+    for id,todo of items
+      todo.$ = new ResourceAccessors todo, todo.$
+
+    Polymer 'todo-resource-storage',
+      items: items
+      createTodo: ->
+        todo = {}
+        todo.$ = new ResourceAccessors todo, todo.$
+        todo
+
+
+polymer-element name='todo-resource-item' attributes='item_id item'
+  template
+    todo-resource-storage#storage items="{{ storedTodos }}"
+
+  coffee:
+    Polymer 'todo-resource-item',
+
+      # Input
+      item_id: undefined
+
+      # Output
+      item: undefined
+
+      # TODO: should we use created intead of enteredView?
+      enteredView: ->
+        @_itemSpy = new CompoundPathObserver (-> @item?.$.save()), @
+        for attr in ['text','done','notes']
+          @_itemSpy.addPath @, Path.get("item.#{attr}")
+        @_itemSpy.start()
+
+        @_itemIdSpy = new PathObserver @, 'item.$.id',
+          ((newId)->@item_id = newId if @item)
+          @
+        @_updateItem()
+        return
+
+      leftView: ->
+        @_itemSpy.close()
+        @_itemIdSpy.close()
+        
+      item_idChanged:     -> @_updateItem()
+      storedTodosChanged: -> @_updateItem()
+
+      _updateItem: ->
+        # New item?
+        @item =
+          if @item_id? then @storedTodos[@item_id]
+          else @$.storage.createTodo()
+        return
+
+
+polymer-element name='todo-resource-collection' attributes='query items'
+  template
+    todo-resource-storage#storage items="{{ storedTodos }}"
+
+  coffee:
+    Polymer 'todo-resource-collection',
+
+      # Input
+      query: {}
+
+      # Output
+      items: []
+
+      # TODO: should this be created instead of enteredView?
+      enteredView: ->
+        @_querySpy = new CompoundPathObserver @_updateItems, @
+        for attr in ['text','done','notes']
+          @_querySpy.addPath @, Path.get("query.#{attr}") 
+        @_querySpy.start()
+        return
+
+      leftView: ->
+        @_querySpy.close()
+        @_storedTodosSpy?.close()
+        return
+
+      storedTodosChanged: ->
+        if @storedTodos
+          @_storedTodosSpy?.close()
+          @_storedTodosSpy = new ObjectObserver @storedTodos, @_updateItems, @
+        @_updateItems()
+        return
+
+      _testItem: (item)->
+        {text,done,notes} = @query
+        (not text? or -1 < item.text.indexOf text) and
+          (not notes? or -1 < item.notes.indexOf notes) and
+          (not done? or item.done is done)
+
+      _updateItems: ->
+        return unless @query? and @storedTodos?
+        @items = (item for id,item of @storedTodos when @_testItem item)
+                    .sort (a,b)-> b.$.lastUpdated - a.$.lastUpdated
+        return

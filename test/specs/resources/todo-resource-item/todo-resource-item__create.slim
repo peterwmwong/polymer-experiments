@@ -1,0 +1,68 @@
+== html_test 'resources/todo-resource.html'
+
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockTodo.js'
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = MockTodo()
+      note2 = MockTodo()
+      note3 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
+
+      Polymer 't-test',
+
+        # Test
+        # ----
+        todoChanged: ->
+          return if not @todo or @testStarted
+          @testStarted = true
+
+          @item_id = undefined
+          @async ->
+            expect(@todo).to.deep.equal $:{}
+            expect(@todo.$.isNew).to.equal true
+
+            @todo.text = 'four'
+            @todo.notes = 'four notes'
+            @todo.done = true
+            @todo.$.save()
+
+            @async ->
+              expect(JSON.parse localStorage.getItem 'ioi-store')
+                .to.deep.equal MockTodoMap [
+                  note1
+                  note2
+                  note3
+                  @todo
+                ]
+              expect(@todo.$.isNew).to.equal false
+              expect(@item_id).to.be.a 'string'
+
+              newItemId = @item_id
+              @todo.$.save()
+              @async ->
+                expect(JSON.parse localStorage.getItem 'ioi-store')
+                  .to.deep.equal MockTodoMap [
+                    note1
+                    note2
+                    note3
+                    @todo
+                  ]
+                expect(@todo.$.isNew).to.equal false
+                expect(@item_id).to.equal newItemId
+                  
+                @item_id = note2.$.id
+                @async ->
+                  expect(@todo.$.isNew).to.equal false
+                  expect(@todo).to.deep.equal note2
+                  expect(@item_id).to.equal note2.$.id
+                  
+                  done()

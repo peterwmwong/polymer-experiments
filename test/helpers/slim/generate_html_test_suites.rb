@@ -46,7 +46,7 @@ def generate_html_test_suites
 
     # For each html test: htmlTest(...)
     suite_source += 
-      html_tests.map { |htmlfile| "  htmlTest('#{htmlfile}');"}.join '\n'
+      html_tests.map { |htmlfile| "  htmlTest('#{htmlfile}');"}.join "\n"
     suite_source + "\n});"
   end.join("\n")
   

@@ -1,81 +1,48 @@
-link rel="import" href="../models/m-todos.html"
+link rel="import" href="v-banner.html"
 link rel="import" href="v-todo-item.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
-
-polymer-element name="v-todos"
+link rel="import" href="../resources/todo-resource.html"
+link rel="import" href="../../vendor/polymer-all/polymer-ui-elements/polymer-ui-card/polymer-ui-card.html"
+  
+polymer-element name="v-todos" attributes="user_id list_id"
 
   template
     link rel="stylesheet" href="v-todos.css"
 
-    m-todos#model
+    todo-resource-collection [ query="{{ {userId:user_id, listId:list_id} }}"
+                               items="{{ listTodos }}" ]
 
     #todos
-      template repeat="{{ todo in $.model.todos }}"
-        a.todo [ touch-action="pan-y"
-                 on-tap="openTodoDetails" ]
-          | {{ todo.text }}
-
       h-ios-overflow-scroll
 
-    / TODO: new polymer-element
-    .banner
-      button.btn-compose-newTodo [ touch-action="none"
-                                   on-tap="onNewTodo" ]
-      button.btn-settings
-      .title
-        | Groceries
+      template repeat="{{ listTodos }}"
+        polymer-ui-card.todo [ swipeable=""
+                               on-polymer-card-swipe-away="onDeleteTodo"
+                               on-tap="onOpenDetails" ]
+          | {{ text }}
 
-    v-todo-item#todoDetails [ todo="{{ expandedTodo }}"
-                              on-deletetodo="onDeleteTodo"
-                              on-collapse="onCollapseTodo" ]
+    v-banner on-new-todo="onNewTodo"
+
+    v-todo-item#todoDetails
 
   coffee:
     Polymer "v-todos",
-      expandedTodo: undefined
+      ###
+      Creates a new todo, when the enter key is pressed and input
+      is not empty.
+      ###
+      onNewTodo: ->
+        @$.todoDetails.open()
+
+      onDeleteTodo: (event)->
+        event.target.templateInstance.model.$.delete()
 
       ###
       "Opens" a todo for a user...
       1) to allow editing
       2) to see further details (notes, alarms, etc.)
       ###
-      openTodoDetails: (ev)->
-        unless @expandedTodo
-          @expandedTodo =
-            model: ev.target.templateInstance.model.todo
-            element: ev.target
-          # TODO[ polyfill(Object.observe) ]: Remove when Object.observe() is on all
-          #                                   supported browsers.
-          Platform.performMicrotaskCheckpoint()
-
-      ###
-      Creates a new todo, when the enter key is pressed and input
-      is not empty.
-      ###
-      onNewTodo: ->
-        unless @expandedTodo
-          @expandedTodo = model:
-            text: ""
-            done: false
-            $new: true
-          Platform.performMicrotaskCheckpoint()
-
-      ###
-      Delete todo.
-      ###
-      onDeleteTodo: (ev, todo)->
-        @$.model.removeTodo todo
-
-      onCollapseTodo: (ev, todo)->
-        if todo and (todo is @expandedTodo)
-          @expandedTodo = undefined
-
-          # If the todo is new and NOT empty, add the new todo
-          if todo.model.$new and todo.model.text
-            delete todo.model.$new
-            @$.model.addTodo todo.model
-
-            # TODO: polymer/CustomElement/something is wrapping elements in a way
-            #       that scrollTop can't be set!
-            @$.todos.impl.scrollTop = 0
-
-          Platform.performMicrotaskCheckpoint()
+      onOpenDetails: ({target})->
+        @$.todoDetails.open
+          todo_id: target.templateInstance.model.todo.$.id
+          element_to_expand_from: target

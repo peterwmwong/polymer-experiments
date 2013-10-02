@@ -1,0 +1,45 @@
+== html_test 'resources/todo-resource.html'
+
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockTodo.js'
+
+  polymer-element name="t-test"
+    template
+      todo-resource-collection query="{{ query }}" items="{{ todos }}"
+      
+    coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = MockTodo text: 'one', done: true
+      note2 = MockTodo text: 'two', done: false
+      note3 = MockTodo text: 'three', done: false
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
+
+      Polymer 't-test',
+        query:
+          text: 't'
+
+        # Test
+        # ----
+        todosChanged: ->
+          return if not @todos?.length or @testStarted
+          @testStarted = true
+
+          expect(@todos).to.deep.equal [
+            note3
+            note2
+          ]
+
+          @query.text = 'on'
+          @async ->
+            expect(@todos).to.deep.equal [
+              note1
+            ]
+
+            @query.text = 'BOGUS'
+            @async ->
+              expect(@todos).to.deep.equal []
+
+              done()

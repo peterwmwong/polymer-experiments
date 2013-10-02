@@ -1,0 +1,40 @@
+== html_test 'resources/todo-resource.html'
+
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockTodo.js'
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = MockTodo()
+      note2 = MockTodo()
+      note3 = MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify MockTodo.all
+
+      Polymer 't-test',
+
+        item_id: note2.$.id
+
+        # Test
+        # ----
+        todoChanged: ->
+          return if not @todo or @testStarted
+          @testStarted = true
+
+          expect(@todo).to.deep.equal note2
+
+          @todo.$.delete()
+          @async ->
+            expect(JSON.parse localStorage.getItem 'ioi-store')
+              .to.deep.equal MockTodoMap [
+                note1
+                note3
+              ]
+                
+            done()

@@ -1,0 +1,32 @@
+link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-ajax/polymer-xhr.html'
+
+polymer-element name='m-user'
+  template
+    polymer-xhr#xhr
+
+  coffee:
+    user =
+      id: undefined
+      username: undefined
+      firstName: undefined
+      lastName: undefined
+
+    `
+    var _proto = {
+      get id(){ return user.id; },
+      get username(){ return user.username; },
+      get firstName(){ return user.firstName; },
+      get lastName(){ return user.firstName; }
+    };
+    `
+
+    Polymer 'm-user', Object.create _proto,
+      login:
+        value: (username, password)->
+          if user.i
+            @$.xhr.request
+              url: ''
+              method: 'POST'
+
+      logout:
+        value: ->

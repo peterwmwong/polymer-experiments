@@ -1,0 +1,44 @@
+== html_test 'resources/todo-resource.html'
+
+  / Mocks/Helpers
+  / -------------
+  script src='../../../helpers/MockTodo.js'
+
+  polymer-element name="t-test"
+    template
+      todo-resource-item#todoItem item_id="{{ item_id }}" item="{{ todo }}"
+      
+    coffee:
+      # Setup
+      # -----
+      localStorage.removeItem 'ioi-store'
+      note1 = @MockTodo()
+      note2 = @MockTodo()
+      note3 = @MockTodo()
+      localStorage.setItem 'ioi-store', JSON.stringify @MockTodo.all
+
+      Polymer 't-test',
+        item_id: note2.$.id
+        
+        # Test
+        # ----
+        todoChanged: ->
+          return if not @todo or @testStarted
+          @testStarted = true
+
+          expect(@todo).to.deep.equal note2
+          expect(@todo.$.isNew).to.equal false
+          expect(@item_id).to.equal note2.$.id
+
+          @item_id = note3.$.id
+          @async ->
+            expect(@todo).to.deep.equal note3
+            expect(@todo.$.isNew).to.equal false
+            expect(@item_id).to.equal note3.$.id
+
+            @item_id = 'BOGUS'
+            @async ->
+              expect(@todo).to.equal undefined
+              expect(@item_id).to.equal 'BOGUS'
+
+              done()

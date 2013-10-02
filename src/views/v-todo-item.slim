@@ -1,13 +1,15 @@
 link rel="import" href="v-todo-input.html"
+link rel="import" href="../resources/todo-resource.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 
-polymer-element name="v-todo-item" attributes="todo"
+polymer-element name="v-todo-item"
 
   template
     link rel="stylesheet" href="v-todo-item.css"
 
-    #btnBack [ touch-action="none"
-               on-tap="onEndEditingTodo" ]
+    todo-resource-item item_id="{{ todo_id }}" item="{{ todo }}"
+
+    #btnBack on-tap="onClose" touch-action="none"
       | &lt;
 
     #wrap
@@ -17,7 +19,7 @@ polymer-element name="v-todo-item" attributes="todo"
         / TODO: Remove 2 layers of wraps
         .basicPanel
           input#editTodoText [ is="v-todo-input"
-                               value="{{ todo.model.text }}"
+                               value="{{ todo.text }}"
                                on-blurred="onBlur" ]
 
         / TODO: extract into new element
@@ -27,10 +29,11 @@ polymer-element name="v-todo-item" attributes="todo"
               | NOTES
 
             .section
-              textarea.notes [ value="{{ todo.model.notes }}"
+              textarea.notes [ value="{{ todo.notes }}"
                                rows="7"
                                placeholder="Leave yourself a note..."
-                               on-click="onNotesFocus" ]
+                               on-tap="onNotesFocus"
+                               touch-action="none" ]
 
   coffee:
     # TODO: Reassess Web Animations
@@ -39,21 +42,40 @@ polymer-element name="v-todo-item" attributes="todo"
     ANIMATION_DURATION_MS = 250
 
     Polymer 'v-todo-item',
+      is_open: false
+      todo_id: undefined
       todo: undefined
+      element_to_expand_from: undefined
 
-      todoChanged: ->
-        if @todo
-          @onStartEditingTodo()
-          # HACK(iOS): Delayed focus avoids a flicker
-          setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS*1.5
+      open: (options)->
+        return if @is_open
+        @is_open = true
+
+        # If no options, create a new todo
+        {@todo_id, @element_to_expand_from} = options or {}
+        @$.editTodoText.blur()
+        @.style.zIndex = 999
+
+        # Animation before start
+        @$.panelContainer.setAttribute 'style',
+          "-webkit-transform: translate3d(0,#{@getTranslateY @element_to_expand_from}px,0);"
+
+        requestAnimationFrame =>
+          # Animation start
+          @$.panelContainer.setAttribute 'style',
+            '-webkit-transform: translate3d(0,0,0);'
+          @$.btnBack.classList.add 'editing'
+          @$.wrap.classList.add 'editing'
+
+        # HACK(iOS): Delayed focus avoids a flicker
+        setTimeout (=>@$.editTodoText.focus()), ANIMATION_DURATION_MS*1.5
 
       ###
       Returns the y-coordinate to animate to and from.
       ###
-      getTranslateY: ->
-        if @todo.element
-          @todo.element.offsetTop - @todo.element.parentNode.scrollTop
-        else 0
+      getTranslateY: (element)->
+        return 0 unless element
+        element.offsetTop - element.parentNode.scrollTop
 
       # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
       #            up, causing the cancel/back button to go offscreen.
@@ -61,25 +83,19 @@ polymer-element name="v-todo-item" attributes="todo"
         @asyncMethod => window.scrollTo 0,0
 
       onBlur: (ev,fromKeyboard)->
-        @onEndEditingTodo() if fromKeyboard
+        @onClose() if fromKeyboard
 
-      onStartEditingTodo: (e)->
-        @$.editTodoText.blur()
+      onClose: ->
+        return unless @is_open
+        @is_open = false
 
-        @.style.zIndex = 999
-        # Animation before start
-        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
+        @todo.$.save() if not @todo.$.isNew or @todo.text
 
-        requestAnimationFrame =>
-          # Animation start
-          @$.panelContainer.setAttribute 'style', '-webkit-transform: translate3d(0,0,0);'
-          @$.btnBack.classList.add 'editing'
-          @$.wrap.classList.add 'editing'
-
-      onEndEditingTodo: ->
         # Animation start
-        @$.panelContainer.setAttribute 'style', "-webkit-transform: translate3d(0,#{@getTranslateY()}px,0);"
-        @$.detailedPanel.setAttribute 'style', '-webkit-transform: translate3d(0,-100%,0);'
+        @$.panelContainer.setAttribute 'style',
+          "-webkit-transform: translate3d(0,#{@getTranslateY @element_to_expand_from}px,0);"
+        @$.detailedPanel.setAttribute 'style',
+          '-webkit-transform: translate3d(0,-100%,0);'
         @$.wrap.classList.add 'bgout'
         @$.btnBack.classList.remove 'editing'
 
@@ -93,5 +109,4 @@ polymer-element name="v-todo-item" attributes="todo"
           @$.wrap.classList.remove 'bgout'
           @$.wrap.style.backgroundColor = ''
           @.style.zIndex = ''
-          @fire 'collapse', @todo
         ), ANIMATION_DURATION_MS

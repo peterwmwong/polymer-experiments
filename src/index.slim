@@ -4,15 +4,19 @@ html
     meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'
     meta name='viewport' content='width=320.1, initial-scale=1, user-scalable=no'
     meta name='apple-mobile-web-app-capable' content='yes'
+    / TODO: IOS7...
+    /   1. switch to black-translucent 
+    /   2. add margin
+    /   3. change banner color
     meta name='apple-mobile-web-app-status-bar-style' content='black'
     title
       | ioi - I'm on it!
     script src='../vendor/polymer-all/polymer/polymer.js'
     link rel='stylesheet' href='index.css'
-    link rel='import' href='views/v-todos.html'
+    link rel='import' href='views/v-app.html'
 
   body
-    v-todos#app
+    v-app#app
 
     //- livereload
     javascript:

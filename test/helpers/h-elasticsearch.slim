@@ -1,0 +1,66 @@
+link rel='import' href='../../vendor/polymer-all/polymer-elements/polymer-ajax/polymer-xhr.html'
+
+polymer-element name="h-elasticsearch"
+  template
+    polymer-xhr#xhr
+
+  coffee:
+    createDocWithDefaults = (attr)->
+      attr.text = attr.text or "text#{Date.now()}"
+      attr.notes = attr.notes or "Notes for #{attr.text}"
+      attr.done = attr.done? or false
+      attr
+
+    runUntilDone = (cb)->
+      done = false
+      runs =>
+        cb -> done = true
+      waitsFor -> done
+      return
+
+    Polymer 'h-elasticsearch',
+      testServerURL: 'http://127.0.0.1:9200'
+
+      ready: ->
+        @index = "test#{Date.now()}"
+        return
+
+      refresh: ->
+        runUntilDone (done)=>
+          @$.xhr.request
+            method: 'POST'
+            url: "#{@testServerURL}/#{@index}/_refresh"
+            callback: done
+
+      createDocs: (docs)->
+        runUntilDone (done)=>
+          docs = [docs] unless Array.isArray docs
+          docDatas =
+            for doc in docs
+              """
+              #{JSON.stringify {create:{}}}
+              #{JSON.stringify createDocWithDefaults doc}
+              """
+          @$.xhr.request
+            method: 'POST'
+            url: "#{@testServerURL}/#{@index}/todos/_bulk"
+            data: docDatas.join('\n')+'\n'
+            callback: done
+
+      createIndex: ->
+        runUntilDone (done)=>
+          @$.xhr.request
+            method: 'PUT'
+            url: "#{@testServerURL}/#{@index}"
+            data: JSON.stringify
+              "number_of_shards" : 1
+              "number_of_replicas" : 0
+            callback: done
+        @index
+
+      deleteIndex: ->
+        runUntilDone (done)=>
+          @$.xhr.request
+            method: 'DELETE'
+            url: "#{@testServerURL}/#{@index}"
+            callback: done

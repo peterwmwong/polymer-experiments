@@ -1,0 +1,49 @@
+@import 'buttons';
+@import 'colors';
+@import 'constants';
+
+@host {
+  * {
+    text-align: center;
+    height: 3*$base-font-size;
+    line-height: 3*$base-font-size;
+    font-size: 1.25em;
+    color: $grayscale-1;
+    background-color: $grayscale-4;
+    border-top: 1px solid $color-white;
+    border-bottom: 1px solid $grayscale-3;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+}
+
+.btn-compose-newTodo, .btn-settings {
+  @include button( rgba($color-white,0) );
+  height: 2.75*$base-font-size;
+  line-height: 2.5*$base-font-size;
+  color: darken($grayscale-3,5%);
+  font-size: 1.25em;
+  position: relative;
+
+  &:before {
+    content: '+';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+}
+
+.btn-settings {
+  float: left;
+
+  &:before {
+    content: '=';
+  }
+}
+
+.btn-compose-newTodo {
+  float: right;
+}
