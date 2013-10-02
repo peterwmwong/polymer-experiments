@@ -32,8 +32,13 @@
           @todo.done = true
           @todo.notes = 'four notes'
           @async ->
-            expect(@todo.$.isNew).to.equal true
-            expect(getStore()).to.deep.equal MockTodo.all
+          
+            @todo.text = 'five'
+            @todo.done = false
+            @todo.notes = 'five notes'
+            @async ->
+              expect(@todo.$.isNew).to.equal true
+              expect(getStore()).to.deep.equal MockTodo.all
 
-            done()
+              done()
 

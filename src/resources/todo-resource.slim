@@ -77,7 +77,10 @@ polymer-element name='todo-resource-item' attributes='item_id item'
 
       # TODO: should we use created intead of enteredView?
       enteredView: ->
-        @_itemSpy = new CompoundPathObserver (-> @item?.$.save()), @
+        @_itemSpy = new CompoundPathObserver (->
+          @item.$.save() if @item?.$.isNew is false
+        ), @
+
         for attr in ['text','done','notes']
           @_itemSpy.addPath @, Path.get("item.#{attr}")
         @_itemSpy.start()
