@@ -1,5 +1,31 @@
+link rel="import" href="v-banner.html"
 link rel="import" href="v-todos.html"
+link rel="import" href="v-todo-item.html"
 
-polymer-element name="v-app" noscript=""
+polymer-element name="v-app"
   template
-    v-todos
+    link rel="stylesheet" href="v-app.css"
+
+    v-banner on-new-todo="onNewTodo"
+    v-todos on-todo-selected="onTodoSelected"
+    v-todo-item#todoDetails
+
+  coffee:
+    Polymer 'v-app',
+
+      ###
+      Creates a new todo, when the enter key is pressed and input
+      is not empty.
+      ###
+      onNewTodo: ->
+        @$.todoDetails.open()
+
+      ###
+      "Opens" a todo for a user...
+      1) to allow editing
+      2) to see further details (notes, alarms, etc.)
+      ###
+      onTodoSelected: (event, {todo_id,expand_from})->
+        @$.todoDetails.open
+          todo_id: todo_id
+          element_to_expand_from: expand_from

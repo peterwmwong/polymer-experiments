@@ -75,7 +75,8 @@ polymer-element name="v-todo-item"
       ###
       getTranslateY: (element)->
         return 0 unless element
-        element.offsetTop - element.parentNode.scrollTop
+        # TODO: use a better "get global position of element"
+        element.offsetTop - element.offsetParent.offsetTop + 48
 
       # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
       #            up, causing the cancel/back button to go offscreen.

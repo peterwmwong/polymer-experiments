@@ -4,66 +4,20 @@
 
 @host {
   * {
-    background-color: #FFF;
     display: block;
     color: #444;
     font-size: 16px;
+    background-color: $color-white;
+    overflow: scroll;
   }
 }
 
-v-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-}
-
-.inputWrap {
-  display: none;
-  padding: 10px;
-
-  > #newTodo {
-    display: block;
-    background-color: transparent;
-    width: 100%;
-    border: none;
-    outline: none;
-    font-size: 22px;
-
-    &::-webkit-input-placeholder {
-      font-style: italic;
-    }
-  }
-}
-
-#todos {
-  background-color: $color-white;
-  margin-top: 3em;
-  z-index: 1;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: scroll;
-
-  > .todo {
-    border-bottom: 1px solid $grayscale-4;
-    box-shadow: none;
-    color: $grayscale-0;
-    cursor: pointer;
-    display: block;
-    padding: 1em;
-    text-decoration: none;
-  }
-}
-
-#todoDetails {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
+.todo {
+  border-bottom: 1px solid $grayscale-4;
+  box-shadow: none;
+  color: $grayscale-0;
+  cursor: pointer;
+  display: block;
+  padding: 1em;
+  text-decoration: none;
 }

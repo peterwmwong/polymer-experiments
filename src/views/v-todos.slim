@@ -1,5 +1,3 @@
-link rel="import" href="v-banner.html"
-link rel="import" href="v-todo-item.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 link rel="import" href="../resources/todo-resource.html"
 link rel="import" href="../../vendor/polymer-all/polymer-ui-elements/polymer-ui-card/polymer-ui-card.html"
@@ -12,37 +10,21 @@ polymer-element name="v-todos" attributes="user_id list_id"
     todo-resource-collection [ query="{{ {userId:user_id, listId:list_id} }}"
                                items="{{ listTodos }}" ]
 
-    #todos
-      h-ios-overflow-scroll
+    h-ios-overflow-scroll
 
-      template repeat="{{ listTodos }}"
-        polymer-ui-card.todo [ swipeable=""
-                               on-polymer-card-swipe-away="onDeleteTodo"
-                               on-tap="onOpenDetails" ]
-          | {{ text }}
-
-    v-banner on-new-todo="onNewTodo"
-
-    v-todo-item#todoDetails
+    template repeat="{{ listTodos }}"
+      polymer-ui-card.todo [ swipeable=""
+                             on-polymer-card-swipe-away="onDeleteTodo"
+                             on-tap="onTodoSelected" ]
+        | {{ text }}
 
   coffee:
     Polymer "v-todos",
-      ###
-      Creates a new todo, when the enter key is pressed and input
-      is not empty.
-      ###
-      onNewTodo: ->
-        @$.todoDetails.open()
 
       onDeleteTodo: (event)->
         event.target.templateInstance.model.$.delete()
 
-      ###
-      "Opens" a todo for a user...
-      1) to allow editing
-      2) to see further details (notes, alarms, etc.)
-      ###
-      onOpenDetails: ({target})->
-        @$.todoDetails.open
-          todo_id: target.templateInstance.model.todo.$.id
-          element_to_expand_from: target
+      onTodoSelected: ({target})->
+        @fire 'todo-selected',
+          todo_id: target.templateInstance.model.$.id
+          expand_from: target
