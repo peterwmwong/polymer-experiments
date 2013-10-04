@@ -14,7 +14,7 @@
   cursor: pointer;
   position: absolute;
   z-index: 4;
-  top: 5px;
+  top: 21px;
   left: 0;
 
   color: $grayscale-2;
@@ -72,7 +72,7 @@
       > .basicPanel {
         background-color: $color-white;
         border-bottom: 1px solid $grayscale-3;
-        margin-top: 48px;
+        margin-top: 64px;
         padding: 17px 10px;
 
         > #editTodoText {

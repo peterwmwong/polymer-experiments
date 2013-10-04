@@ -8,10 +8,8 @@
     height: 3*$base-font-size;
     line-height: 3*$base-font-size;
     font-size: 1.25em;
-    color: $grayscale-1;
-    background-color: $grayscale-4;
-    border-top: 1px solid $color-white;
-    border-bottom: 1px solid $grayscale-3;
+    color: $grayscale-4;
+    background-color: $color-blue;
     overflow: hidden;
     box-sizing: border-box;
   }
@@ -21,7 +19,7 @@
   @include button( rgba($color-white,0) );
   height: 2.75*$base-font-size;
   line-height: 2.5*$base-font-size;
-  color: darken($grayscale-3,5%);
+  color: $grayscale-4;
   font-size: 1.25em;
   position: relative;
 
