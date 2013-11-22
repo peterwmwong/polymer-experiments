@@ -1,4 +1,3 @@
-link rel="import" href="v-todo-input.html"
 link rel="import" href="../resources/todo-resource.html"
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 
@@ -18,9 +17,7 @@ polymer-element name="v-todo-item"
       #panelContainer
         / TODO: Remove 2 layers of wraps
         .basicPanel
-          input#editTodoText [ is="v-todo-input"
-                               value="{{ todo.text }}"
-                               on-blurred="{{onBlur}}" ]
+          input#editTodoText value="{{ todo.text }}" on-keyup="{{onKeyup}}"
 
         / TODO: extract into new element
         .detailedPanelContainer
@@ -83,8 +80,8 @@ polymer-element name="v-todo-item"
       onNotesFocus: ->
         @asyncMethod => window.scrollTo 0,0
 
-      onBlur: (ev,fromKeyboard)->
-        @onClose() if fromKeyboard
+      onKeyup: (ev)->
+        @onClose() if ev.which is 13
 
       onClose: ->
         return unless @is_open
