@@ -9,7 +9,7 @@ polymer-element name="v-todo-item"
 
     todo-resource-item item_id="{{ todo_id }}" item="{{ todo }}"
 
-    #btnBack on-tap="onClose" touch-action="none"
+    #btnBack on-tap="{{onClose}}" touch-action="none"
       | &lt;
 
     #wrap
@@ -20,7 +20,7 @@ polymer-element name="v-todo-item"
         .basicPanel
           input#editTodoText [ is="v-todo-input"
                                value="{{ todo.text }}"
-                               on-blurred="onBlur" ]
+                               on-blurred="{{onBlur}}" ]
 
         / TODO: extract into new element
         .detailedPanelContainer
@@ -32,7 +32,7 @@ polymer-element name="v-todo-item"
               textarea.notes [ value="{{ todo.notes }}"
                                rows="7"
                                placeholder="Leave yourself a note..."
-                               on-tap="onNotesFocus"
+                               on-tap="{{onNotesFocus}}"
                                touch-action="none" ]
 
   coffee:
@@ -78,7 +78,7 @@ polymer-element name="v-todo-item"
         # TODO: use a better "get global position of element"
         element.offsetTop - element.offsetParent.offsetTop + 64
 
-      # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything 
+      # HACK(iOS): Fix auto scroll on input focus.  It overscrolls everything
       #            up, causing the cancel/back button to go offscreen.
       onNotesFocus: ->
         @asyncMethod => window.scrollTo 0,0
@@ -104,8 +104,8 @@ polymer-element name="v-todo-item"
           @$.panelContainer.setAttribute 'style', ''
           @$.detailedPanel.setAttribute 'style', ''
 
-          # HACK(iOS/Polymer): Fix blink when adding/removing 'editing' class 
-          #                    using case statement Polymer/ExpressionSyntax 
+          # HACK(iOS/Polymer): Fix blink when adding/removing 'editing' class
+          #                    using case statement Polymer/ExpressionSyntax
           @$.wrap.classList.remove 'editing'
           @$.wrap.classList.remove 'bgout'
           @$.wrap.style.backgroundColor = ''

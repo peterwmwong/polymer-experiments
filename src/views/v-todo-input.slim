@@ -1,8 +1,8 @@
 polymer-element [ name="v-todo-input"
                   extends="input"
-                  on-blur="onBlur"
-                  on-focus="onFocus"
-                  on-keyup="onKeyup"
+                  on-blur="{{onBlur}}"
+                  on-focus="{{onFocus}}"
+                  on-keyup="{{onKeyup}}"
                   type="text" ]
   coffee:
     Polymer "v-todo-input",

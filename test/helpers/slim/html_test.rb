@@ -7,7 +7,7 @@ def html_test(polymer_element_path)
         #{polymer_element_path}
       </title>
 
-      <script src="../../../../vendor/polymer-all/polymer/polymer.js"></script>
+      <script src="../../../../bower_components/polymer/polymer.min.js"></script>
       <script src="../../../../vendor/polymer-tools-test/htmltest.js"></script>
       <script src="../../../../vendor/polymer-tools-test/chai/chai.js"></script>
       <script src="../../../../vendor/sinon-chai/sinon-chai.js"></script>

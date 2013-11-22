@@ -1,7 +1,7 @@
 link rel="import" href="../helpers/h-ios-overflow-scroll.html"
 link rel="import" href="../resources/todo-resource.html"
-link rel="import" href="../../vendor/polymer-all/polymer-ui-elements/polymer-ui-card/polymer-ui-card.html"
-  
+link rel="import" href="../../bower_components/polymer-ui-card/polymer-ui-card.html"
+
 polymer-element name="v-todos" attributes="user_id list_id"
 
   template
@@ -13,9 +13,9 @@ polymer-element name="v-todos" attributes="user_id list_id"
     h-ios-overflow-scroll
 
     template repeat="{{ listTodos }}"
-      polymer-ui-card.todo [ swipeable=""
-                             on-polymer-card-swipe-away="onDeleteTodo"
-                             on-tap="onTodoSelected" ]
+      polymer-ui-card.todo [ swipeable
+                             on-polymer-card-swipe-away="{{onDeleteTodo}}"
+                             on-tap="{{onTodoSelected}}" ]
         | {{ text }}
 
   coffee:

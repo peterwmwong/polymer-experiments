@@ -6,8 +6,8 @@ polymer-element name="v-app"
   template
     link rel="stylesheet" href="v-app.css"
 
-    v-banner on-new-todo="onNewTodo"
-    v-todos on-todo-selected="onTodoSelected"
+    v-banner on-new-todo="{{onNewTodo}}"
+    v-todos on-todo-selected="{{onTodoSelected}}"
     v-todo-item#todoDetails
 
   coffee:

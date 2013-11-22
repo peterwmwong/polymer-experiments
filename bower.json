@@ -1,5 +1,6 @@
 {
   "name": "polymer-experiments",
+  "private": true,
   "version": "0.0.0",
   "ignore": [
     "**/.*",
@@ -12,6 +13,8 @@
     "jasmine": "~1.3.1"
   },
   "dependencies": {
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "polymer": "~0.0.20131107",
+    "polymer-ui-card": "Polymer/polymer-ui-card#master"
   }
 }
